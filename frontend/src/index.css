@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand colors: modern, vibrant blue palette */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6; /* Accent color */
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+  --color-brand-950: #172554;
+
+  /* Semantic UI Colors */
+  --color-surface-bg: #fdfdfd;      /* Flat minimalist white background */
+  --color-surface-card: #ffffff;    /* Card background */
+  --color-surface-muted: #f8fafc;   /* Slate light neutral background */
+  --color-surface-hover: #f1f5f9;   /* Hover states */
+  
+  --color-border-subtle: #e2e8f0;   /* Slate-200 for thin minimal divider borders */
+  --color-border-focus: #3b82f6;    /* Accent border focus */
+
+  --color-text-main: #0f172a;       /* Slate-900 main heading/body text */
+  --color-text-muted: #475569;      /* Slate-600 description text */
+  --color-text-light: #94a3b8;      /* Slate-400 caption text */
+  --color-text-brand: #2563eb;      /* Primary link/accent text */
+
+  /* Font settings */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Layout Transitions */
+  --transition-smooth: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base style resets */
+@layer base {
+  html, body {
+    background-color: var(--color-surface-bg);
+    color: var(--color-text-main);
+    font-family: var(--font-sans);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom minimalist scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Custom text selection */
+  ::selection {
+    background-color: var(--color-brand-200);
+    color: var(--color-brand-950);
+  }
+}
+
+/* Minimal utility classes for typography */
+.text-main { color: var(--color-text-main); }
+.text-muted { color: var(--color-text-muted); }
+.text-light { color: var(--color-text-light); }
+.text-brand { color: var(--color-text-brand); }
+.bg-surface-bg { background-color: var(--color-surface-bg); }
+.bg-surface-card { background-color: var(--color-surface-card); }
+.bg-surface-muted { background-color: var(--color-surface-muted); }
+.border-subtle { border-color: var(--color-border-subtle); }

@@ -1,0 +1,56 @@
+================================================================================
+🎓 SKILLCHAIN - CREDENCIAIS E DADOS DE TESTE (DEMO HACKATHON)
+================================================================================
+
+Este arquivo contém todas as contas de usuário, senhas e chaves de validação
+pré-carregadas no banco de dados para testar a aplicação em desenvolvimento
+e em produção (Vercel).
+
+--------------------------------------------------------------------------------
+1. CONTAS DE LOGIN (E-mail e Senha)
+--------------------------------------------------------------------------------
+
+🔴 ADMINISTRADOR MASTER (Aprova instituições e gerencia o sistema)
+   - E-mail: admin@skillchain.org
+   - Senha: adminpassword
+   - Role: Admin
+   - Carteira: 0x3302beC705ef21e65566e2E841D7A0204fF1820b (Admin Máximo no Smart Contract)
+
+🏢 INSTITUIÇÃO DE ENSINO (Cadastra cursos e emite certificados)
+   - Nome: MIT University
+   - E-mail: mit@edu.org
+   - Senha: mitpassword
+   - Role: Institution (Já aprovada pelo admin)
+   - Carteira Associada: 0x1111222233334444555566667777888899990000
+
+👨‍🎓 ESTUDANTE (Visualiza seus próprios certificados)
+   - Nome: John Doe
+   - E-mail: john@doe.com
+   - Senha: johnpassword
+   - Role: Student
+
+--------------------------------------------------------------------------------
+2. CURSO CADASTRADO (Semente)
+--------------------------------------------------------------------------------
+   - Título: Solidity Development Masterclass
+   - ID do Curso: yfq532t0w
+   - Carga Horária: 40 horas
+   - Instituição: MIT University
+
+--------------------------------------------------------------------------------
+3. CERTIFICADO MOCKADO (Para teste de validação pública)
+--------------------------------------------------------------------------------
+
+Você pode digitar qualquer um dos dados abaixo na página pública de validação:
+
+   - ID de Validação: 2jwr91084
+   - Hash do Certificado (IPFS): QmXoypizjW3WknFixtdKLw6yS47n3kX488C9Z235bX798f
+   - Hash da Transação na Blockchain: 0x3219aa2e537e2ab77112009ef327e5c70ba9db32192138eb12ab34d7ef8109bf
+   - Nome do Aluno: John Doe
+   - Instituição Emissora: MIT University
+   - Status: ATIVO / VÁLIDO
+
+================================================================================
+🔗 URL DE PRODUÇÃO DA APLICAÇÃO:
+https://hackweb-skillchain.vercel.app/
+================================================================================

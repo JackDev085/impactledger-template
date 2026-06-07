@@ -1,0 +1,134 @@
+SkillChain - Plataforma de Certificação Educacional Auditável em Blockchain
+
+================================================================================
+Visão Geral
+================================================================================
+O SkillChain é uma plataforma que permite que instituições de ensino, empresas, ONGs e organizações de capacitação emitam certificados digitais verificáveis utilizando blockchain e smart contracts.
+
+O objetivo é combater fraudes curriculares, aumentar a confiança entre recrutadores e candidatos e criar um histórico educacional auditável e permanente.
+
+Ao concluir um curso, o aluno recebe um certificado digital registrado em blockchain, permitindo que qualquer pessoa valide sua autenticidade através de um link público ou identificador único. A solução está alinhada ao conceito de impacto educacional verificável, transformando capacitação profissional em registros transparentes, auditáveis e imutáveis.
+
+================================================================================
+Problema
+================================================================================
+Atualmente, recrutadores possuem dificuldade para validar informações presentes em currículos. Alguns desafios comuns incluem:
+• Certificados falsificados.
+• Cursos inexistentes ou instituições fantasma.
+• Alteração e adulteração de arquivos PDF.
+• Dificuldade extrema para confirmar cargas horárias.
+• Falta de padronização entre emissores de certificados.
+• Processo manual de validação (espera de dias por e-mails de secretarias).
+
+Consequentemente:
+• Empresas perdem tempo valioso auditando currículos.
+• Processos seletivos ficam menos confiáveis.
+• Candidatos honestos são prejudicados por falsificadores.
+• Instituições de ensino legítimas perdem autoridade.
+
+================================================================================
+Proposta de Valor
+================================================================================
+O SkillChain cria um ecossistema digital onde:
+• Instituições legítimas emitem certificados instantaneamente auditáveis.
+• Alunos possuem comprovação permanente e descentralizada das suas conquistas.
+• Recrutadores conseguem validar certificados em segundos.
+• Empresas confiam na integridade das formações cadastradas.
+
+================================================================================
+Público-Alvo
+================================================================================
+Instituições Emissoras:
+• Escolas técnicas e Universidades.
+• Plataformas de cursos online (EAD).
+• ONGs, projetos sociais e programas governamentais de capacitação.
+
+Verificadores / Usuários:
+• Recrutadores e Departamentos de RH.
+• Estudantes e profissionais acadêmicos.
+
+================================================================================
+Fluxo Principal da Aplicação
+================================================================================
+
+1. Governança e Cadastro da Instituição:
+   A instituição solicita cadastro preenchendo suas informações básicas (Nome, E-mail, Site e Endereço da Carteira MetaMask). O Administrador Máximo (MEC ou Órgão Regulador) analisa a solicitação e aprova a instituição diretamente no Smart Contract.
+
+2. Criação do Curso:
+   Após ser aprovada, a instituição cadastra seus cursos na plataforma informando o título do curso, descrição detalhada e carga horária (workload).
+
+3. Emissão de Certificado:
+   Ao fim de uma turma ou conclusão de curso, a instituição preenche os dados do aluno (Nome, E-mail, Curso e Hash da credencial). O sistema gera a transação em blockchain vinculando o certificado ao hash gerado.
+
+4. Validação Pública:
+   Um recrutador acessa o link público de verificação, insere o ID do certificado ou hash, e o frontend lê instantaneamente o Smart Contract na blockchain Sepolia, comprovando o status do documento e as credenciais do emissor.
+
+================================================================================
+Arquitetura Atual do Projeto
+================================================================================
+
+--------------------------------------------------------------------------------
+Frontend (React + Vite)
+--------------------------------------------------------------------------------
+• Core: React (v19) compilado com Vite para alta performance de build local.
+• Estilização: Tailwind CSS v4 para uma identidade limpa, minimalista e premium.
+• Animações: Framer Motion fornecendo transições elegantes de página e modais.
+• Integração Web3: Ethers.js v6 para conexões seguras à rede Ethereum Sepolia via carteira MetaMask.
+• Roteamento: React Router Dom (v7).
+
+--------------------------------------------------------------------------------
+Backend (Node.js + Express)
+--------------------------------------------------------------------------------
+• Core: Express.js (v4) configurado com suporte nativo a ES Modules.
+• Autenticação: Controle de acesso baseado em cargos (Admin, Institution, Student) utilizando JSON Web Tokens (JWT) e criptografia Bcrypt.
+• Banco de Dados: JSON Database autosemeável integrado com sistema de arquivos temporários (/tmp) para compatibilidade com execução Serverless.
+
+--------------------------------------------------------------------------------
+Blockchain (Ethereum Sepolia Testnet)
+--------------------------------------------------------------------------------
+• Linguagem do Smart Contract: Solidity (v0.8.24).
+• Ambiente de Desenvolvimento: Hardhat v2 com Hardhat Ignition para deploy e automação de testes.
+• Endereço do Contrato (Sepolia): 0x2351562952afb48bf847C96065531e724658Da2F
+
+--------------------------------------------------------------------------------
+Infraestrutura de Deploy
+--------------------------------------------------------------------------------
+• Deploy Unificado: Hospedagem monorepo na Vercel utilizando Builds de Node e Builds Estáticas.
+• API Base URL: Roteada dinamicamente entre localhost e a rota relativa /api sob o mesmo domínio da Vercel.
+
+================================================================================
+Estrutura do Smart Contract (Solidity)
+================================================================================
+
+• Estruturas de Dados:
+  ```solidity
+  struct Institution {
+      string name;
+      address wallet;
+      bool active;
+  }
+
+  struct Certificate {
+      uint256 id;
+      string certificateHash;
+      string studentHash;
+      address issuer;
+      uint256 issuedAt;
+      bool revoked;
+  }
+  ```
+
+• Funções Principais:
+  - `approveInstitution(address _wallet, string memory _name)`: Registra e ativa uma nova instituição na blockchain (somente o Admin máximo).
+  - `issueCertificate(uint256 _id, string memory _certificateHash, string memory _studentHash)`: Associa o hash criptográfico do certificado ao ID correspondente na blockchain (somente instituições ativas).
+  - `verifyCertificate(uint256 _id)`: Retorna os metadados criptográficos atestando a validade do certificado de forma pública.
+  - `revokeCertificate(uint256 _id)`: Permite que a instituição emissora revogue um certificado em caso de fraude.
+
+================================================================================
+Métricas e Dashboard de Impacto
+================================================================================
+A plataforma oferece indicadores cruciais para auditoria:
+• Total de certificados válidos emitidos.
+• Volume total de horas de capacitação geradas pelas instituições de ensino.
+• Quantidade de instituições parceiras ativas.
+• Taxa de consultas realizadas para validações públicas de recrutadores.

@@ -1,0 +1,61 @@
+{
+  "users": [
+    {
+      "id": "admin-id",
+      "username": "Admin Authority",
+      "email": "admin@skillchain.org",
+      "passwordHash": "$2a$10$sgDf57BeeHqth9NEmGzK3eaddi/BTLcvkGwT0ZqEuiLB0.OFF07vS",
+      "role": "admin",
+      "walletAddress": "0x3302bec705ef21e65566e2e841d7a0204ff1820b",
+      "isApproved": true,
+      "createdAt": "2026-06-07T17:08:29.839Z"
+    },
+    {
+      "id": "mit-id",
+      "username": "MIT University",
+      "email": "mit@edu.org",
+      "passwordHash": "$2a$10$2oRmJVA3UCKp9EJndfVug.n0igtnLUv8EKhCDUFLTCMwibg0Hjusu",
+      "role": "institution",
+      "walletAddress": "0x1111222233334444555566667777888899990000",
+      "isApproved": true,
+      "createdAt": "2026-06-07T17:08:29.840Z"
+    },
+    {
+      "id": "john-id",
+      "username": "John Doe",
+      "email": "john@doe.com",
+      "passwordHash": "$2a$10$RbKNQmEzY9UHRjggVlOaV.KGtLpYhgmtisgT5Rd/JwywXsRzC1Z/K",
+      "role": "student",
+      "walletAddress": null,
+      "isApproved": true,
+      "createdAt": "2026-06-07T17:08:29.840Z"
+    }
+  ],
+  "courses": [
+    {
+      "id": "yfq532t0w",
+      "title": "Solidity Development Masterclass",
+      "description": "Complete hands-on Ethereum development course.",
+      "workloadHours": 40,
+      "institutionId": "mit-id",
+      "createdAt": "2026-06-07T17:08:29.840Z"
+    }
+  ],
+  "enrollments": [],
+  "certificates": [
+    {
+      "id": "2jwr91084",
+      "studentEmail": "john@doe.com",
+      "studentName": "John Doe",
+      "courseId": "yfq532t0w",
+      "courseTitle": "Solidity Development Masterclass",
+      "workloadHours": 40,
+      "certificateHash": "QmXoypizjW3WknFixtdKLw6yS47n3kX488C9Z235bX798f",
+      "transactionHash": "0x3219aa2e537e2ab77112009ef327e5c70ba9db32192138eb12ab34d7ef8109bf",
+      "issuerName": "MIT University",
+      "issuerWallet": "0x1111222233334444555566667777888899990000",
+      "issuedAt": "2026-06-07T17:08:29.840Z",
+      "createdAt": "2026-06-07T17:08:29.840Z"
+    }
+  ]
+}
