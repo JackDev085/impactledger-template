@@ -115,3 +115,8 @@ Para testar a aplicação sem precisar criar dados do zero, utilize as contas pr
 * **Instituição de Ensino:** `mit@edu.org` / `mitpassword`
 * **Estudante:** `john@doe.com` / `johnpassword`
 * **ID para Validação Pública:** `2jwr91084` (digite este ID na barra de busca de verificação para testar a resposta do banco de dados).
+
+---
+## Equipe
+
+- Jackson Lorran do Nascimento
