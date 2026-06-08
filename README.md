@@ -24,12 +24,16 @@ Utilizando a rede de testes **Ethereum Sepolia**, a plataforma atesta a autentic
   * **Admin Máximo (Autoridade Governamental/MEC):** Responsável por aprovar ou rejeitar instituições de ensino na rede para garantir que apenas entidades legítimas emitam diplomas.
   * **Instituições de Ensino (Universidades/Escolas):** Cadastram cursos, gerenciam cargas horárias e emitem certificados vinculados às carteiras dos alunos.
   * **Estudantes:** Acessam seus painéis e visualizam seus certificados acumulados de forma organizada.
-* **Emissão Híbrida (Web2 + Web3):**
-  * Suporta gravação direta de transações na blockchain Sepolia via MetaMask.
-  * Mantém um banco de dados ágil no backend que armazena os metadados do curso e do aluno.
+* **Integração Web3 e MetaMask Consolidada:**
+  * **HUD de Carteira Completo:** Painel de status no cabeçalho do Dashboard exibindo conexão de carteira e endereço ativo.
+  * **Alternância de Contas em Tempo Real:** Escuta ativa do evento `accountsChanged` do MetaMask para sincronizar instantaneamente a carteira ativa na extensão com a sessão do site.
+  * **Seletor de Carteira Inteligente:** O clique em Conectar força a exibição do diálogo de seleção de conta do MetaMask (`wallet_requestPermissions`) para facilitar testes multi-carteira.
+  * **Recuperação de Sessão Resiliente:** Auto-reconexão silenciosa caso o contrato precise ser chamado após um refresh de página.
+* **Integridade Transacional Rígida:**
+  * **Rollback de Banco de Dados:** Sem simulações locais ou mocks. Se a transação falhar ou for rejeitada na blockchain, o backend não registra a ação no banco de dados e retorna erro apropriado.
 * **Validação Pública Instantânea:**
   * Qualquer recrutador ou empresa pode acessar a página de verificação sem login.
-  * O sistema consulta o contrato inteligente e atesta se o emissor era autorizado e se o hash confere com o registrado em blockchain.
+  * O sistema consulta o contrato inteligente on-chain e atesta se o emissor era autorizado e se o hash confere com o registrado em blockchain.
 
 ---
 
