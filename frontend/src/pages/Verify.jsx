@@ -27,13 +27,13 @@ export default function Verify() {
           courseName: cert.courseTitle,
           workload: cert.workloadHours,
           studentName: cert.studentName,
-          studentHash: cert.studentEmail, // fallback to email representation
+          studentHash: cert.studentHash || cert.studentEmail, // fallback to email representation
           issuerName: cert.issuerName,
-          issuer: cert.issuerId,
+          issuer: cert.issuerWallet || cert.issuerId,
           issuedAt: cert.issuedAt,
           ipfsHash: cert.certificateHash,
           blockchainTx: cert.transactionHash,
-          mode: 'database',
+          mode: apiResult.blockchainVerified ? 'blockchain' : 'database',
           revoked: cert.status === 'revoked'
         })
         setLoading(false)
@@ -243,7 +243,13 @@ export default function Verify() {
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t border-slate-200/40">
                     <span className="text-slate-500">REGISTRY LEDGER:</span>
-                    <span className="text-slate-800 font-semibold uppercase">{result.mode === 'mock' ? 'MOCK BLOCKCHAIN (DEMO)' : 'POLYGON/ETHEREUM'}</span>
+                    <span className="text-slate-800 font-semibold uppercase">
+                      {result.mode === 'blockchain' 
+                        ? '🟢 ETHEREUM SEPOLIA (ON-CHAIN VERIFIED)' 
+                        : result.mode === 'database' 
+                          ? '🟡 LOCAL DATABASE ONLY (NOT ON-CHAIN)' 
+                          : '🔵 MOCK BLOCKCHAIN (DEMO)'}
+                    </span>
                   </div>
                 </div>
               </div>

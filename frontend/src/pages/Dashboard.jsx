@@ -34,6 +34,8 @@ export default function Dashboard() {
     walletAddress: ''
   })
 
+  const [walletUser, setWalletUser] = useState(null)
+
   // Panel Form States
   const [courseForm, setCourseForm] = useState({ name: '', description: '', workload: '' })
   const [certForm, setCertForm] = useState({ studentName: '', studentEmail: '', courseId: '', ipfsHash: '' })
@@ -90,6 +92,35 @@ export default function Dashboard() {
       }
       loadData(loggedUser)
     }
+
+    // Load wallet session
+    const activeWallet = blockchainService.getCurrentUser()
+    if (activeWallet) {
+      setWalletUser(activeWallet)
+      blockchainService.connectWallet().catch(err => {
+        console.warn('Auto wallet connect failed on mount:', err)
+      })
+    }
+
+    if (typeof window !== 'undefined' && window.ethereum) {
+      const handleAccounts = async (accounts) => {
+        if (accounts.length === 0) {
+          handleDisconnectWallet()
+        } else {
+          try {
+            const user = await blockchainService.connectWallet()
+            setWalletUser(user)
+            setMessage({ type: 'success', text: `Wallet switched to: ${user.address}` })
+          } catch (err) {
+            console.error('Wallet account switch failed:', err)
+          }
+        }
+      }
+      window.ethereum.on('accountsChanged', handleAccounts)
+      return () => {
+        window.ethereum.removeListener('accountsChanged', handleAccounts)
+      }
+    }
   }, [])
 
   // Auto connect wallet address to register form
@@ -97,9 +128,10 @@ export default function Dashboard() {
     setLoading(true)
     setMessage(null)
     try {
-      const user = await blockchainService.connectWallet()
+      const user = await blockchainService.connectWallet(true)
       if (user && user.address) {
         setRegisterForm(prev => ({ ...prev, walletAddress: user.address }))
+        setWalletUser(user)
         setMessage({ type: 'success', text: `Wallet connected! Address pre-filled.` })
       }
     } catch (err) {
@@ -108,6 +140,27 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleConnectWallet = async () => {
+    setLoading(true)
+    setMessage(null)
+    try {
+      const user = await blockchainService.connectWallet(true)
+      setWalletUser(user)
+      setMessage({ type: 'success', text: `MetaMask wallet connected successfully: ${user.address}` })
+    } catch (err) {
+      console.error(err)
+      setMessage({ type: 'error', text: err.message || 'MetaMask connection failed.' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDisconnectWallet = () => {
+    blockchainService.disconnectWallet()
+    setWalletUser(null)
+    setMessage({ type: 'success', text: 'MetaMask wallet disconnected.' })
   }
 
   // Auth Handlers
@@ -166,6 +219,7 @@ export default function Dashboard() {
   const handleLogout = () => {
     apiService.auth.logout()
     blockchainService.disconnectWallet()
+    setWalletUser(null)
     setCurrentUser(null)
     setActiveTab('')
     setMessage({ type: 'success', text: 'Successfully logged out.' })
@@ -176,20 +230,10 @@ export default function Dashboard() {
     setLoading(true)
     setMessage(null)
     try {
-      // 1. Optional on-chain registration if admin wallet is connected
-      const adminWallet = blockchainService.getCurrentUser()
-      if (adminWallet && adminWallet.mode === 'blockchain' && adminWallet.isAdmin) {
-        try {
-          await blockchainService.registerInstitution(wallet, name)
-        } catch (chainErr) {
-          console.warn('On-chain registration skipped or failed, persisting to database anyway:', chainErr)
-        }
-      }
-
-      // 2. REST API Approval
+      // 1. REST API Approval (registers the institution on-chain via backend wallet)
       await apiService.admin.approveInstitution(id)
       await loadData(currentUser)
-      setMessage({ type: 'success', text: `Institution "${name}" has been approved.` })
+      setMessage({ type: 'success', text: `Institution "${name}" approved and registered on-chain.` })
     } catch (err) {
       console.error(err)
       setMessage({ type: 'error', text: err.message || 'Failed to approve institution' })
@@ -202,20 +246,10 @@ export default function Dashboard() {
     setLoading(true)
     setMessage(null)
     try {
-      // 1. Optional on-chain status update
-      const adminWallet = blockchainService.getCurrentUser()
-      if (adminWallet && adminWallet.mode === 'blockchain' && adminWallet.isAdmin) {
-        try {
-          await blockchainService.setInstitutionStatus(wallet, false)
-        } catch (chainErr) {
-          console.warn('On-chain status change skipped:', chainErr)
-        }
-      }
-
-      // 2. REST API Deactivation
+      // 1. REST API Deactivation (deactivates the institution on-chain via backend wallet)
       await apiService.admin.deactivateInstitution(id)
       await loadData(currentUser)
-      setMessage({ type: 'success', text: `Institution "${name}" has been deactivated.` })
+      setMessage({ type: 'success', text: `Institution "${name}" deactivated on-chain and database updated.` })
     } catch (err) {
       console.error(err)
       setMessage({ type: 'error', text: err.message || 'Failed to deactivate institution' })
@@ -256,29 +290,35 @@ export default function Dashboard() {
     
     try {
       let transactionHash = ''
+      // Generate random unique 9 digit ID for contract and database
+      const mockId = Math.floor(Math.random() * 900000000) + 100000000
       
-      // 1. If wallet connected, call Smart Contract
-      const instWallet = blockchainService.getCurrentUser()
-      if (instWallet && instWallet.mode === 'blockchain') {
+      // 1. We MUST call the Smart Contract on-chain
+      if (!blockchainService.contract) {
         try {
-          // Generate a local identifier hash representing the student email
-          const encoder = new TextEncoder()
-          const data = encoder.encode(studentEmail.toLowerCase().trim())
-          const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-          const studentHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('')
-          
-          // Generate random unique 9 digit ID for contract
-          const mockId = Math.floor(Math.random() * 900000000) + 100000000
-          const tx = await blockchainService.contract.issueCertificate(mockId, finalIpfsHash, studentHash)
-          const receipt = await tx.wait()
-          transactionHash = receipt.hash
-        } catch (chainErr) {
-          console.warn('Smart Contract transaction failed or rejected. Simulating blockchain transaction...', chainErr)
+          await blockchainService.connectWallet(false)
+        } catch (connErr) {
+          throw new Error('Web3 wallet is not connected. Please connect MetaMask to perform on-chain actions.')
         }
       }
 
-      // 2. Post to backend REST API
+      if (!blockchainService.contract) {
+        throw new Error('Web3 wallet is not connected. Please connect MetaMask to perform on-chain actions.')
+      }
+
+      // Generate a local identifier hash representing the student email
+      const encoder = new TextEncoder()
+      const data = encoder.encode(studentEmail.toLowerCase().trim())
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+      const studentHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('')
+      
+      const tx = await blockchainService.contract.issueCertificate(mockId, finalIpfsHash, studentHash)
+      const receipt = await tx.wait()
+      transactionHash = receipt.hash
+
+      // 2. Post to backend REST API (only if on-chain transaction succeeded!)
       const res = await apiService.institution.issueCertificate(
+        mockId.toString(),
         studentEmail,
         studentName,
         courseId,
@@ -290,11 +330,11 @@ export default function Dashboard() {
       setCertForm({ studentName: '', studentEmail: '', courseId: '', ipfsHash: '' })
       setMessage({
         type: 'success',
-        text: `Certificate issued successfully! ID: #${res.certificate.id}. Logged to blockchain.`
+        text: `Certificate issued successfully! ID: #${res.certificate.id}. Logged to blockchain on-chain.`
       })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.message || 'Failed to issue certificate' })
+      setMessage({ type: 'error', text: err.reason || err.message || 'Failed to issue certificate' })
     } finally {
       setLoading(false)
     }
@@ -305,23 +345,29 @@ export default function Dashboard() {
     setLoading(true)
     setMessage(null)
     try {
-      // 1. Optional on-chain revocation
-      const instWallet = blockchainService.getCurrentUser()
-      if (instWallet && instWallet.mode === 'blockchain') {
+      // 1. MUST perform on-chain revocation
+      if (!blockchainService.contract) {
         try {
-          await blockchainService.revokeCertificate(id)
-        } catch (chainErr) {
-          console.warn('Smart contract revocation skipped or failed:', chainErr)
+          await blockchainService.connectWallet(false)
+        } catch (connErr) {
+          throw new Error('Web3 wallet is not connected. Please connect MetaMask to perform on-chain actions.')
         }
       }
+
+      if (!blockchainService.contract) {
+        throw new Error('Web3 wallet is not connected. Please connect MetaMask to perform on-chain actions.')
+      }
+
+      const tx = await blockchainService.revokeCertificate(id)
+      await tx.wait()
 
       // 2. REST API Revocation
       await apiService.institution.revokeCertificate(id)
       await loadData(currentUser)
-      setMessage({ type: 'success', text: `Certificate #${id} revoked.` })
+      setMessage({ type: 'success', text: `Certificate #${id} successfully revoked on-chain and database.` })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.message || 'Failed to revoke certificate' })
+      setMessage({ type: 'error', text: err.reason || err.message || 'Failed to revoke certificate' })
     } finally {
       setLoading(false)
     }
@@ -340,6 +386,31 @@ export default function Dashboard() {
 
         {currentUser && (
           <div className="flex items-center gap-3">
+            {(currentUser.role === 'admin' || currentUser.role === 'institution') && (
+              <div className="mr-2 flex items-center">
+                {walletUser ? (
+                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1.5 text-xs text-emerald-800">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="font-mono">{walletUser.address.substring(0, 6)}...{walletUser.address.substring(38)}</span>
+                    <button 
+                      onClick={handleDisconnectWallet}
+                      className="ml-1.5 text-[10px] font-bold text-emerald-600 hover:text-emerald-900 underline uppercase tracking-wider"
+                      title="Disconnect Wallet"
+                    >
+                      Disconnect
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleConnectWallet}
+                    className="flex items-center gap-1.5 bg-brand-50 border border-brand-100 hover:bg-brand-100 hover:border-brand-200 transition-colors rounded-lg px-3 py-1.5 text-xs font-bold text-brand-700"
+                  >
+                    <Wallet className="h-3.5 w-3.5" />
+                    <span>Connect MetaMask</span>
+                  </button>
+                )}
+              </div>
+            )}
             <div className="text-right">
               <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Logged In As</span>
               <span className="font-semibold text-slate-800 text-sm block">{currentUser.username}</span>

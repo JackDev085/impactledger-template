@@ -104,14 +104,14 @@ export const apiService = {
       return handleResponse(res)
     },
 
-    issueCertificate: async (studentEmail, studentName, courseId, certificateHash, transactionHash) => {
+    issueCertificate: async (id, studentEmail, studentName, courseId, certificateHash, transactionHash) => {
       const res = await fetch(`${API_BASE_URL}/institution/certificates`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeaders()
         },
-        body: JSON.stringify({ studentEmail, studentName, courseId, certificateHash, transactionHash })
+        body: JSON.stringify({ id, studentEmail, studentName, courseId, certificateHash, transactionHash })
       })
       return handleResponse(res)
     },
