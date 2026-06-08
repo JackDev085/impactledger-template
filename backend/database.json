@@ -18,7 +18,9 @@
       "role": "institution",
       "walletAddress": "0x1111222233334444555566667777888899990000",
       "isApproved": true,
-      "createdAt": "2026-06-07T17:08:29.840Z"
+      "createdAt": "2026-06-07T17:08:29.840Z",
+      "onChainTx": "0x4fd49c822b288eccf058d48db5c703ab1f468adde9c64f67865e72aac23ba953",
+      "updatedAt": "2026-06-08T00:43:27.476Z"
     },
     {
       "id": "john-id",
@@ -29,6 +31,42 @@
       "walletAddress": null,
       "isApproved": true,
       "createdAt": "2026-06-07T17:08:29.840Z"
+    },
+    {
+      "id": "y35vz9b3y",
+      "createdAt": "2026-06-08T00:20:26.089Z",
+      "username": "Universidade Federal do Ceará",
+      "email": "ufc@ufc.org.br",
+      "passwordHash": "$2a$10$XT6PeNYTrPdcgXGS8BreuOfKlFew2RfSy.kuiMqeHv8IuhMRYYuWa",
+      "role": "institution",
+      "walletAddress": "0x3302beC705ef21e65566e2E841D7A0204fF1820c",
+      "isApproved": true,
+      "onChainTx": null,
+      "updatedAt": "2026-06-08T00:43:36.712Z"
+    },
+    {
+      "id": "4633qbvp8",
+      "createdAt": "2026-06-08T00:34:14.764Z",
+      "username": "uniateneu ",
+      "email": "uniateneu@uniateneu.com",
+      "passwordHash": "$2a$10$OB0O/11XKYr7CNkxFun2J.8c9XJUFo.MyXPiD8aCdgNWyz1eZR9S2",
+      "role": "institution",
+      "walletAddress": "0xF6A7b8C9d0E1234567890FaBcDe6789012345678",
+      "isApproved": true,
+      "onChainTx": null,
+      "updatedAt": "2026-06-08T00:43:57.943Z"
+    },
+    {
+      "id": "uxjjopjq3",
+      "createdAt": "2026-06-08T00:52:49.089Z",
+      "username": "uniateneu",
+      "email": "uniateneu@uniateneu",
+      "passwordHash": "$2a$10$Kr2fbJ4TtZZtVcotfwbyBOkgIczMLwGuGPzmkEQZtQH2ePmgr8qay",
+      "role": "institution",
+      "walletAddress": "0x7E29Ec5cB9072b05c934Af94f285D6AD8eEFA439",
+      "isApproved": true,
+      "onChainTx": "0xccbf5b444bafb0d18130e053441d44c58c5f9ff5fb3cff651b5192e4cbfa13eb",
+      "updatedAt": "2026-06-08T00:54:04.328Z"
     }
   ],
   "courses": [
@@ -39,6 +77,30 @@
       "workloadHours": 40,
       "institutionId": "mit-id",
       "createdAt": "2026-06-07T17:08:29.840Z"
+    },
+    {
+      "id": "v7e0ik9fr",
+      "createdAt": "2026-06-08T00:26:41.426Z",
+      "title": "Solidity Development Masterclass",
+      "description": "Complete hands-on Ethereum development course.",
+      "workloadHours": 40,
+      "institutionId": "mit-id"
+    },
+    {
+      "id": "7u69ri5qp",
+      "createdAt": "2026-06-08T00:45:44.161Z",
+      "title": "Curso de ingles",
+      "description": "Curso de inglês avançado para mercado de trabalho.",
+      "workloadHours": 60,
+      "institutionId": "y35vz9b3y"
+    },
+    {
+      "id": "87xujuwjt",
+      "createdAt": "2026-06-08T01:00:31.411Z",
+      "title": "Inglês avançado",
+      "description": "Curso de inglês avançado.",
+      "workloadHours": 70,
+      "institutionId": "uxjjopjq3"
     }
   ],
   "enrollments": [],
@@ -55,7 +117,40 @@
       "issuerName": "MIT University",
       "issuerWallet": "0x1111222233334444555566667777888899990000",
       "issuedAt": "2026-06-07T17:08:29.840Z",
-      "createdAt": "2026-06-07T17:08:29.840Z"
+      "createdAt": "2026-06-07T17:08:29.840Z",
+      "status": "active"
+    },
+    {
+      "id": "150054004",
+      "createdAt": "2026-06-08T00:26:41.432Z",
+      "studentEmail": "john@doe.com",
+      "studentName": "John Doe",
+      "courseId": "v7e0ik9fr",
+      "courseTitle": "Solidity Development Masterclass",
+      "workloadHours": 40,
+      "certificateHash": "QmXoypizjW3WknFixtdKLw6yS47n3kX488C9Z235bX798f",
+      "transactionHash": "0x3219aa2e537e2ab77112009ef327e5c70ba9db32192138eb12ab34d7ef8109bf",
+      "issuerId": "mit-id",
+      "issuerName": "MIT University",
+      "studentId": "john-id",
+      "status": "active",
+      "issuedAt": "2026-06-08T00:26:41.432Z"
+    },
+    {
+      "id": "572485785",
+      "createdAt": "2026-06-08T01:21:55.466Z",
+      "studentEmail": "joaobatista@gmail.com",
+      "studentName": "João Batista",
+      "courseId": "87xujuwjt",
+      "courseTitle": "Inglês avançado",
+      "workloadHours": 70,
+      "certificateHash": "QmJmdRLne57cYoKn60Th1BGcZPaQluZ54fy3wZKdBcMTXb",
+      "transactionHash": "0xf6b9a1065f68f1ef540a20fa098e711d9e31d8357c09d7233fb89de5d183a606",
+      "issuerId": "uxjjopjq3",
+      "issuerName": "uniateneu",
+      "studentId": null,
+      "status": "active",
+      "issuedAt": "2026-06-08T01:21:55.465Z"
     }
   ]
 }

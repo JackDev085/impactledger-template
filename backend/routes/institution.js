@@ -58,7 +58,7 @@ router.post('/courses', (req, res) => {
 // Issue a certificate
 router.post('/certificates', (req, res) => {
   try {
-    const { studentEmail, studentName, courseId, certificateHash, transactionHash } = req.body
+    const { id, studentEmail, studentName, courseId, certificateHash, transactionHash } = req.body
 
     if (!studentEmail || !studentName || !courseId || !certificateHash) {
       return res.status(400).json({ message: 'studentEmail, studentName, courseId and certificateHash are required' })
@@ -74,6 +74,7 @@ router.post('/certificates', (req, res) => {
     const student = db.findOne('users', u => u.email.toLowerCase() === studentEmail.toLowerCase() && u.role === 'student')
 
     const newCertificate = db.create('certificates', {
+      id: id ? String(id) : Math.floor(Math.random() * 900000000 + 100000000).toString(),
       studentEmail: studentEmail.toLowerCase(),
       studentName,
       courseId,
@@ -113,13 +114,13 @@ router.get('/certificates', (req, res) => {
 router.post('/certificates/:id/revoke', (req, res) => {
   try {
     const { id } = req.params
-    const cert = db.findOne('certificates', c => c.id === id && c.issuerId === req.user.id)
+    const cert = db.findOne('certificates', c => String(c.id) === String(id) && c.issuerId === req.user.id)
 
     if (!cert) {
       return res.status(404).json({ message: 'Certificate not found or unauthorized' })
     }
 
-    const updated = db.update('certificates', id, { status: 'revoked' })
+    const updated = db.update('certificates', cert.id, { status: 'revoked' })
     res.json({
       message: 'Certificate revoked successfully',
       certificate: updated
@@ -131,3 +132,4 @@ router.post('/certificates/:id/revoke', (req, res) => {
 })
 
 export default router
+

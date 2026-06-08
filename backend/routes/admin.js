@@ -1,6 +1,7 @@
 import express from 'express'
 import db from '../db.js'
 import { authenticateToken, requireRole } from '../middleware/auth.js'
+import { contract } from '../blockchain.js'
 
 const router = express.Router()
 
@@ -20,8 +21,8 @@ router.get('/institutions', (req, res) => {
   }
 })
 
-// Approve an institution
-router.post('/institutions/:id/approve', (req, res) => {
+// Approve an institution (and register on-chain)
+router.post('/institutions/:id/approve', async (req, res) => {
   try {
     const { id } = req.params
     const institution = db.findOne('users', u => u.id === id && u.role === 'institution')
@@ -30,12 +31,32 @@ router.post('/institutions/:id/approve', (req, res) => {
       return res.status(404).json({ message: 'Institution not found' })
     }
 
-    const updated = db.update('users', id, { isApproved: true })
+    let txHash = null
+    if (!contract) {
+      return res.status(500).json({ message: 'Smart contract connection is not active on backend server.' })
+    }
+    if (!institution.walletAddress) {
+      return res.status(400).json({ message: 'Institution does not have a wallet address registered.' })
+    }
+
+    try {
+      console.log(`Approving institution ${institution.username} on Sepolia...`)
+      const tx = await contract.registerInstitution(institution.walletAddress, institution.username)
+      const receipt = await tx.wait()
+      txHash = receipt.hash
+      console.log(`Approved on-chain! Tx: ${txHash}`)
+    } catch (err) {
+      console.error('Failed to approve institution on-chain:', err)
+      return res.status(500).json({ message: `Failed to approve institution on-chain: ${err.reason || err.message}` })
+    }
+
+    const updated = db.update('users', id, { isApproved: true, onChainTx: txHash })
     const { passwordHash, ...sanitized } = updated
 
     res.json({
-      message: 'Institution approved successfully',
-      institution: sanitized
+      message: 'Institution approved successfully and registered on-chain',
+      institution: sanitized,
+      txHash
     })
   } catch (err) {
     console.error(err)
@@ -43,8 +64,8 @@ router.post('/institutions/:id/approve', (req, res) => {
   }
 })
 
-// Deactivate/Reject an institution
-router.post('/institutions/:id/deactivate', (req, res) => {
+// Deactivate/Reject an institution (and disable on-chain)
+router.post('/institutions/:id/deactivate', async (req, res) => {
   try {
     const { id } = req.params
     const institution = db.findOne('users', u => u.id === id && u.role === 'institution')
@@ -53,12 +74,32 @@ router.post('/institutions/:id/deactivate', (req, res) => {
       return res.status(404).json({ message: 'Institution not found' })
     }
 
-    const updated = db.update('users', id, { isApproved: false })
+    let txHash = null
+    if (!contract) {
+      return res.status(500).json({ message: 'Smart contract connection is not active on backend server.' })
+    }
+    if (!institution.walletAddress) {
+      return res.status(400).json({ message: 'Institution does not have a wallet address registered.' })
+    }
+
+    try {
+      console.log(`Deactivating institution ${institution.username} on Sepolia...`)
+      const tx = await contract.setInstitutionStatus(institution.walletAddress, false)
+      const receipt = await tx.wait()
+      txHash = receipt.hash
+      console.log(`Deactivated on-chain! Tx: ${txHash}`)
+    } catch (err) {
+      console.error('Failed to deactivate institution on-chain:', err)
+      return res.status(500).json({ message: `Failed to deactivate institution on-chain: ${err.reason || err.message}` })
+    }
+
+    const updated = db.update('users', id, { isApproved: false, onChainTx: txHash })
     const { passwordHash, ...sanitized } = updated
 
     res.json({
-      message: 'Institution deactivated successfully',
-      institution: sanitized
+      message: 'Institution deactivated successfully and deactivated on-chain',
+      institution: sanitized,
+      txHash
     })
   } catch (err) {
     console.error(err)
@@ -67,3 +108,4 @@ router.post('/institutions/:id/deactivate', (req, res) => {
 })
 
 export default router
+
