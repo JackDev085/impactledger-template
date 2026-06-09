@@ -9,20 +9,24 @@ const router = express.Router()
 router.use(authenticateToken, requireRole(['institution']))
 
 // Ensure the institution is approved
-const checkApproval = (req, res, next) => {
-  const currentInstitution = db.findOne('users', u => u.id === req.user.id)
-  if (!currentInstitution || !currentInstitution.isApproved) {
-    return res.status(403).json({ message: 'Your institution status is not active or approved' })
+const checkApproval = async (req, res, next) => {
+  try {
+    const currentInstitution = await db.findOne('users', u => u.id === req.user.id)
+    if (!currentInstitution || !currentInstitution.isApproved) {
+      return res.status(403).json({ message: 'Your institution status is not active or approved' })
+    }
+    next()
+  } catch (err) {
+    next(err)
   }
-  next()
 }
 
 router.use(checkApproval)
 
 // Get courses created by this institution
-router.get('/courses', (req, res) => {
+router.get('/courses', async (req, res) => {
   try {
-    const courses = db.find('courses', c => c.institutionId === req.user.id)
+    const courses = await db.find('courses', c => c.institutionId === req.user.id)
     res.json(courses)
   } catch (err) {
     console.error(err)
@@ -31,7 +35,7 @@ router.get('/courses', (req, res) => {
 })
 
 // Create a new course
-router.post('/courses', (req, res) => {
+router.post('/courses', async (req, res) => {
   try {
     const { title, description, workloadHours } = req.body
 
@@ -39,7 +43,7 @@ router.post('/courses', (req, res) => {
       return res.status(400).json({ message: 'Title and workload hours are required' })
     }
 
-    const newCourse = db.create('courses', {
+    const newCourse = await db.create('courses', {
       title,
       description: description || '',
       workloadHours: parseInt(workloadHours),
@@ -144,7 +148,7 @@ router.post('/upload-ipfs', async (req, res) => {
 })
 
 // Issue a certificate
-router.post('/certificates', (req, res) => {
+router.post('/certificates', async (req, res) => {
   try {
     const { id, studentEmail, studentName, courseId, certificateHash, transactionHash } = req.body
 
@@ -153,15 +157,15 @@ router.post('/certificates', (req, res) => {
     }
 
     // Check if course exists
-    const course = db.findOne('courses', c => c.id === courseId && c.institutionId === req.user.id)
+    const course = await db.findOne('courses', c => c.id === courseId && c.institutionId === req.user.id)
     if (!course) {
       return res.status(404).json({ message: 'Course not found or unauthorized' })
     }
 
     // Check if student is already registered
-    const student = db.findOne('users', u => u.email.toLowerCase() === studentEmail.toLowerCase() && u.role === 'student')
+    const student = await db.findOne('users', u => u.email.toLowerCase() === studentEmail.toLowerCase() && u.role === 'student')
 
-    const newCertificate = db.create('certificates', {
+    const newCertificate = await db.create('certificates', {
       id: id ? String(id) : Math.floor(Math.random() * 900000000 + 100000000).toString(),
       studentEmail: studentEmail.toLowerCase(),
       studentName,
@@ -188,9 +192,9 @@ router.post('/certificates', (req, res) => {
 })
 
 // Get issued certificates history
-router.get('/certificates', (req, res) => {
+router.get('/certificates', async (req, res) => {
   try {
-    const certificates = db.find('certificates', cert => cert.issuerId === req.user.id)
+    const certificates = await db.find('certificates', cert => cert.issuerId === req.user.id)
     res.json(certificates)
   } catch (err) {
     console.error(err)
@@ -199,16 +203,16 @@ router.get('/certificates', (req, res) => {
 })
 
 // Revoke a certificate
-router.post('/certificates/:id/revoke', (req, res) => {
+router.post('/certificates/:id/revoke', async (req, res) => {
   try {
     const { id } = req.params
-    const cert = db.findOne('certificates', c => String(c.id) === String(id) && c.issuerId === req.user.id)
+    const cert = await db.findOne('certificates', c => String(c.id) === String(id) && c.issuerId === req.user.id)
 
     if (!cert) {
       return res.status(404).json({ message: 'Certificate not found or unauthorized' })
     }
 
-    const updated = db.update('certificates', cert.id, { status: 'revoked' })
+    const updated = await db.update('certificates', cert.id, { status: 'revoked' })
     res.json({
       message: 'Certificate revoked successfully',
       certificate: updated

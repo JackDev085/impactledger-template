@@ -390,7 +390,6 @@ export default function Dashboard() {
       }
 
       const tx = await blockchainService.revokeCertificate(id)
-      await tx.wait()
 
       // 2. REST API Revocation
       await apiService.institution.revokeCertificate(id)

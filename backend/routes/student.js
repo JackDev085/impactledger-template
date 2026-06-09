@@ -8,13 +8,13 @@ const router = express.Router()
 router.use(authenticateToken, requireRole(['student']))
 
 // Get student certificates list
-router.get('/certificates', (req, res) => {
+router.get('/certificates', async (req, res) => {
   try {
     const studentEmail = req.user.email.toLowerCase()
     const studentId = req.user.id
 
     // Find certificates matching email or user ID
-    const certificates = db.find('certificates', cert => 
+    const certificates = await db.find('certificates', cert => 
       cert.studentEmail === studentEmail || cert.studentId === studentId
     )
 
@@ -26,12 +26,12 @@ router.get('/certificates', (req, res) => {
 })
 
 // Get student dashboard summary
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard', async (req, res) => {
   try {
     const studentEmail = req.user.email.toLowerCase()
     const studentId = req.user.id
 
-    const certificates = db.find('certificates', cert => 
+    const certificates = await db.find('certificates', cert => 
       (cert.studentEmail === studentEmail || cert.studentId === studentId) && cert.status === 'active'
     )
 

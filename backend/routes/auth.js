@@ -16,7 +16,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Check duplicate email
-    const existingUser = db.findOne('users', u => u.email.toLowerCase() === email.toLowerCase())
+    const existingUser = await db.findOne('users', u => u.email.toLowerCase() === email.toLowerCase())
     if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' })
     }
@@ -41,7 +41,7 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10)
 
     // Save user
-    const newUser = db.create('users', {
+    const newUser = await db.create('users', {
       username,
       email,
       passwordHash,
@@ -74,7 +74,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required' })
     }
 
-    const user = db.findOne('users', u => u.email.toLowerCase() === email.toLowerCase())
+    const user = await db.findOne('users', u => u.email.toLowerCase() === email.toLowerCase())
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' })
     }

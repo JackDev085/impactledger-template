@@ -1,145 +1,152 @@
-import fs from 'fs'
+import pg from 'pg'
+import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import bcrypt from 'bcryptjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const isVercel = process.env.VERCEL || process.env.NOW_BUILD_TRIGGER;
-const DB_FILE = isVercel
-  ? path.join('/tmp', 'database.json')
-  : path.join(__dirname, 'database.json');
+dotenv.config({ path: path.join(__dirname, '.env') })
 
-class JSONDatabase {
+const connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL
+
+const cleanUrl = connectionString ? connectionString.split('?')[0] : null
+
+class SupabaseDatabase {
   constructor() {
-    this.data = {
-      users: [],
-      courses: [],
-      enrollments: [],
-      certificates: []
-    }
+    this.pool = null
+    this.isReady = false
     this.init()
   }
 
   init() {
-    // On Vercel, if the tmp database doesn't exist, copy the pre-seeded bundled database
-    if (isVercel && !fs.existsSync(DB_FILE)) {
-      const bundledDbPath = path.join(__dirname, 'database.json')
-      if (fs.existsSync(bundledDbPath)) {
-        try {
-          fs.copyFileSync(bundledDbPath, DB_FILE)
-          console.log('📋 Copied pre-seeded database to Vercel /tmp directory.')
-        } catch (err) {
-          console.error('Failed to copy bundled database to /tmp:', err)
-        }
-      }
+    if (!cleanUrl) {
+      console.warn('⚠️ Warning: POSTGRES_URL is not defined in env variables. Database connection is offline.')
+      return
     }
 
-    if (fs.existsSync(DB_FILE)) {
-      try {
-        const fileContent = fs.readFileSync(DB_FILE, 'utf8')
-        this.data = JSON.parse(fileContent)
-      } catch (err) {
-        console.error('Failed to parse database.json, initializing empty db:', err)
-        this.save()
-      }
-    } else {
-      this.save()
-    }
-
-    // Self-healing patch: Ensure seeded certificate has status: 'active'
-    if (this.data.certificates) {
-      const seedCert = this.data.certificates.find(c => c.id === '2jwr91084')
-      if (seedCert && !seedCert.status) {
-        seedCert.status = 'active'
-        this.save()
-        console.log('🩹 Patched seeded certificate status to active.')
-      }
-    }
-
-    // Seed database if empty of users
-    if (!this.data.users || this.data.users.length === 0) {
-      this.seed()
-    }
-  }
-
-  seed() {
-    console.log('🌱 Seeding database with initial admin data...')
-    
-    const adminPasswordHash = bcrypt.hashSync('adminpassword', 10)
-
-    this.data.users = [
-      {
-        id: 'admin-id',
-        username: 'Admin Authority',
-        email: 'admin@skillchain.org',
-        passwordHash: adminPasswordHash,
-        role: 'admin',
-        walletAddress: '0x3302beC705ef21e65566e2E841D7A0204fF1820b'.toLowerCase(),
-        isApproved: true,
-        createdAt: new Date().toISOString()
-      }
-    ]
-
-    this.data.courses = []
-    this.data.certificates = []
-
-    this.save()
-    console.log('✅ Database seeded with admin user.')
-  }
-
-  save() {
     try {
-      fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), 'utf8')
+      this.pool = new pg.Pool({
+        connectionString: cleanUrl,
+        ssl: {
+          rejectUnauthorized: false
+        },
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000
+      })
+      this.isReady = true
+      console.log('🔌 Supabase PostgreSQL connection pool initialized.')
     } catch (err) {
-      console.error('Failed to write to database.json:', err)
+      console.error('❌ Failed to initialize PostgreSQL connection pool:', err)
     }
   }
 
-  // Generic helper methods
-  find(collection, predicate) {
-    return this.data[collection].filter(predicate)
+  getTableName(collection) {
+    if (collection === 'users') return 'skillchain_users'
+    if (collection === 'courses') return 'skillchain_courses'
+    if (collection === 'certificates') return 'skillchain_certificates'
+    return collection
   }
 
-  findOne(collection, predicate) {
-    return this.data[collection].find(predicate)
-  }
-
-  create(collection, item) {
-    const newItem = {
-      id: Math.random().toString(36).substring(2, 11),
-      createdAt: new Date().toISOString(),
-      ...item
+  async query(sql, params) {
+    if (!this.pool) {
+      this.init()
     }
-    this.data[collection].push(newItem)
-    this.save()
-    return newItem;
+    if (!this.pool) {
+      throw new Error('Database pool not initialized.')
+    }
+    return this.pool.query(sql, params)
   }
 
-  update(collection, id, updates) {
-    const index = this.data[collection].findIndex(item => item.id === id)
-    if (index !== -1) {
-      this.data[collection][index] = {
-        ...this.data[collection][index],
-        ...updates,
-        updatedAt: new Date().toISOString()
+  // Fetch all rows from table, then apply JS predicate filter for backward compatibility
+  async find(collection, predicate) {
+    try {
+      const table = this.getTableName(collection)
+      const res = await this.query(`SELECT * FROM ${table}`)
+      const rows = res.rows
+      if (predicate) {
+        return rows.filter(predicate)
       }
-      this.save()
-      return this.data[collection][index]
+      return rows
+    } catch (err) {
+      console.error(`Error in db.find on ${collection}:`, err)
+      return []
     }
-    return null
   }
 
-  delete(collection, id) {
-    const index = this.data[collection].findIndex(item => item.id === id)
-    if (index !== -1) {
-      const deleted = this.data[collection].splice(index, 1)
-      this.save()
-      return deleted[0]
+  // Fetch all rows and find first match using JS predicate filter
+  async findOne(collection, predicate) {
+    try {
+      const table = this.getTableName(collection)
+      const res = await this.query(`SELECT * FROM ${table}`)
+      const rows = res.rows
+      if (predicate) {
+        return rows.find(predicate) || null
+      }
+      return rows[0] || null
+    } catch (err) {
+      console.error(`Error in db.findOne on ${collection}:`, err)
+      return null
     }
-    return null
+  }
+
+  // Create new record and insert into PostgreSQL
+  async create(collection, item) {
+    try {
+      const table = this.getTableName(collection)
+      const id = item.id || Math.random().toString(36).substring(2, 11)
+      const createdAt = item.createdAt || new Date().toISOString()
+      const updatedAt = item.updatedAt || new Date().toISOString()
+      
+      const fullItem = { ...item, id, createdAt, updatedAt }
+      
+      const keys = Object.keys(fullItem)
+      const columns = keys.map(k => `"${k}"`).join(', ')
+      const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ')
+      const values = keys.map(k => fullItem[k])
+      
+      const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders}) RETURNING *`
+      const res = await this.query(sql, values)
+      return res.rows[0]
+    } catch (err) {
+      console.error(`Error in db.create on ${collection}:`, err)
+      throw err
+    }
+  }
+
+  // Update existing record
+  async update(collection, id, updates) {
+    try {
+      const table = this.getTableName(collection)
+      const updatedAt = new Date().toISOString()
+      const fullUpdates = { ...updates, updatedAt }
+      
+      const keys = Object.keys(fullUpdates)
+      const setClause = keys.map((k, i) => `"${k}" = $${i + 2}`).join(', ')
+      const values = [id, ...keys.map(k => fullUpdates[k])]
+      
+      const sql = `UPDATE ${table} SET ${setClause} WHERE id = $1 RETURNING *`
+      const res = await this.query(sql, values)
+      return res.rows[0] || null
+    } catch (err) {
+      console.error(`Error in db.update on ${collection}:`, err)
+      throw err
+    }
+  }
+
+  // Delete record
+  async delete(collection, id) {
+    try {
+      const table = this.getTableName(collection)
+      const sql = `DELETE FROM ${table} WHERE id = $1 RETURNING *`
+      const res = await this.query(sql, [id])
+      return res.rows[0] || null
+    } catch (err) {
+      console.error(`Error in db.delete on ${collection}:`, err)
+      throw err
+    }
   }
 }
 
-const db = new JSONDatabase()
+const db = new SupabaseDatabase()
 
 export default db

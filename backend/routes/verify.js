@@ -44,7 +44,7 @@ router.get('/:id', async (req, res) => {
     let certDb = null
 
     // Try finding in local DB first to support searching by certificateHash / IPFS hash
-    certDb = db.findOne('certificates', c => String(c.id) === String(id) || c.certificateHash === id || c.transactionHash === id)
+    certDb = await db.findOne('certificates', c => String(c.id) === String(id) || c.certificateHash === id || c.transactionHash === id)
     if (certDb) {
       certId = Number(certDb.id)
     } else if (!isNaN(Number(id))) {
@@ -89,6 +89,28 @@ router.get('/:id', async (req, res) => {
             }
           })
         } else {
+          if (certDb) {
+            return res.json({
+              exists: true,
+              isValid: certDb.status === 'active',
+              blockchainVerified: false,
+              certificate: {
+                id: certDb.id,
+                studentName: certDb.studentName,
+                studentEmail: certDb.studentEmail,
+                studentHash: certDb.studentHash || '',
+                courseTitle: certDb.courseTitle,
+                workloadHours: Number(certDb.workloadHours),
+                certificateHash: certDb.certificateHash,
+                transactionHash: certDb.transactionHash || 'Pendente / Offline',
+                issuerName: certDb.issuerName,
+                issuerId: certDb.issuerId,
+                issuerWallet: certDb.issuerWallet || '',
+                status: certDb.status,
+                issuedAt: certDb.issuedAt || certDb.createdAt
+              }
+            })
+          }
           return res.status(404).json({
             exists: false,
             isValid: false,
@@ -98,6 +120,29 @@ router.get('/:id', async (req, res) => {
       } catch (chainErr) {
         console.error('Failed to verify on blockchain:', chainErr)
       }
+    }
+
+    if (certDb) {
+      return res.json({
+        exists: true,
+        isValid: certDb.status === 'active',
+        blockchainVerified: false,
+        certificate: {
+          id: certDb.id,
+          studentName: certDb.studentName,
+          studentEmail: certDb.studentEmail,
+          studentHash: certDb.studentHash || '',
+          courseTitle: certDb.courseTitle,
+          workloadHours: Number(certDb.workloadHours),
+          certificateHash: certDb.certificateHash,
+          transactionHash: certDb.transactionHash || 'Pendente / Offline',
+          issuerName: certDb.issuerName,
+          issuerId: certDb.issuerId,
+          issuerWallet: certDb.issuerWallet || '',
+          status: certDb.status,
+          issuedAt: certDb.issuedAt || certDb.createdAt
+        }
+      })
     }
 
     return res.status(404).json({

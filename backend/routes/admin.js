@@ -9,9 +9,9 @@ const router = express.Router()
 router.use(authenticateToken, requireRole(['admin']))
 
 // Get all institutions (pending and approved)
-router.get('/institutions', (req, res) => {
+router.get('/institutions', async (req, res) => {
   try {
-    const institutions = db.find('users', u => u.role === 'institution')
+    const institutions = await db.find('users', u => u.role === 'institution')
     // Remove password hashes from response
     const sanitized = institutions.map(({ passwordHash, ...rest }) => rest)
     res.json(sanitized)
@@ -25,7 +25,7 @@ router.get('/institutions', (req, res) => {
 router.post('/institutions/:id/approve', async (req, res) => {
   try {
     const { id } = req.params
-    const institution = db.findOne('users', u => u.id === id && u.role === 'institution')
+    const institution = await db.findOne('users', u => u.id === id && u.role === 'institution')
 
     if (!institution) {
       return res.status(404).json({ message: 'Institution not found' })
@@ -50,7 +50,7 @@ router.post('/institutions/:id/approve', async (req, res) => {
       return res.status(500).json({ message: `Failed to approve institution on-chain: ${err.reason || err.message}` })
     }
 
-    const updated = db.update('users', id, { isApproved: true, onChainTx: txHash })
+    const updated = await db.update('users', id, { isApproved: true, onChainTx: txHash })
     const { passwordHash, ...sanitized } = updated
 
     res.json({
@@ -68,7 +68,7 @@ router.post('/institutions/:id/approve', async (req, res) => {
 router.post('/institutions/:id/deactivate', async (req, res) => {
   try {
     const { id } = req.params
-    const institution = db.findOne('users', u => u.id === id && u.role === 'institution')
+    const institution = await db.findOne('users', u => u.id === id && u.role === 'institution')
 
     if (!institution) {
       return res.status(404).json({ message: 'Institution not found' })
@@ -93,7 +93,7 @@ router.post('/institutions/:id/deactivate', async (req, res) => {
       return res.status(500).json({ message: `Failed to deactivate institution on-chain: ${err.reason || err.message}` })
     }
 
-    const updated = db.update('users', id, { isApproved: false, onChainTx: txHash })
+    const updated = await db.update('users', id, { isApproved: false, onChainTx: txHash })
     const { passwordHash, ...sanitized } = updated
 
     res.json({

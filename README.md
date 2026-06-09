@@ -45,9 +45,9 @@ O projeto é estruturado em um monorepo dividido em duas partes principais:
   * **Estilização:** Tailwind CSS v4 para uma interface moderna, minimalista e responsiva em tons de azul escuro e cinza.
   * **Animações:** Framer Motion para transições de página e feedbacks de carregamento fluidos.
   * **Web3 Integration:** Ethers.js v6 para comunicação direta com a MetaMask e leitura de contratos na rede Sepolia.
-* **Backend (Node.js + Express):**
-  * Banco de dados JSON leve e auto-semeável (seeding automatizado para facilidade em apresentações).
-  * Adaptado para rodar sob **Vercel Serverless Functions**, utilizando o diretório temporário `/tmp` para gravação de novos cadastros em tempo real.
+* **Backend (Node.js + Express + Supabase):**
+  * Persistência de dados completa integrada ao PostgreSQL do Supabase para cursos, instituições e certificados emitidos.
+  * Conexão blockchain integrada para validar o status real on-chain das credenciais.
 * **Contratos Inteligentes (Solidity + Hardhat):**
   * Contrato `SkillChain.sol` contendo a governança de aprovação de instituições e a emissão e revogação de certificados.
   * Compilado e testado usando a suíte Hardhat.
@@ -58,22 +58,24 @@ O projeto é estruturado em um monorepo dividido em duas partes principais:
 
 ### Pré-requisitos
 * Node.js (v18 ou superior)
-* Extensão da carteira MetaMask instalada no navegador (caso queira testar a integração com a Blockchain)
+* Extensão da carteira MetaMask instalada no navegador
 
-### 1. Clonando o Repositório e Configurando o Backend
-Entre na pasta do backend, instale as dependências e configure o arquivo `.env`:
+### 1. Configurando o Backend
+Navegue até a pasta do backend, instale as dependências:
 
 ```bash
 cd backend
 npm install
 ```
 
-Crie um arquivo `.env` na pasta `backend/` seguindo o modelo:
+Crie um arquivo `.env` na pasta `backend/` seguindo as credenciais configuradas:
 ```env
 PORT=5000
 JWT_SECRET=sua_chave_secreta_jwt
-ALCHEMY_API_KEY=sua_api_key_do_alchemy_ou_infura
-SEPOLIA_PRIVATE_KEY=sua_chave_privada_da_carteira_sepolia
+ALCHEMY_API_KEY=sua_api_key_do_alchemy
+SEPOLIA_PRIVATE_KEY=sua_chave_privada_da_carteira
+NEXT_PUBLIC_SUPABASE_URL=sua_url_supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_anon_key_supabase
 ```
 
 Inicie o servidor de desenvolvimento do backend:
@@ -101,116 +103,58 @@ O frontend estará acessível em `http://localhost:5173`.
 ## ⛓️ Informações de Deploy (Produção)
 
 ### Smart Contract (Sepolia Testnet)
-O contrato inteligente foi implantado no seguinte endereço:
+O contrato inteligente está implantado sob o endereço:
 * **Contrato:** `0x2351562952afb48bf847C96065531e724658Da2F`
-* **Explorador:** [Sepolia Etherscan Link](https://sepolia.etherscan.io/address/0x2351562952afb48bf847C96065531e724658Da2F)
+* **Explorador:** [Sepolia Etherscan](https://sepolia.etherscan.io/address/0x2351562952afb48bf847C96065531e724658Da2F)
 
 ### Hospedagem (Vercel)
-O frontend e o backend estão rodando de forma unificada sob o mesmo link na Vercel:
+O projeto está publicado em produção:
 * **URL:** [https://hackweb-skillchain.vercel.app/](https://hackweb-skillchain.vercel.app/)
 
 ---
 
 ## 🔑 Dados para Apresentação (Demo)
 
-Para testar a aplicação sem precisar criar dados do zero, utilize as contas pré-carregadas descritas no arquivo [dados_demo.txt](./dados_demo.txt):
+Para testar a aplicação sem precisar criar dados do zero, utilize as credenciais descritas abaixo:
 
-* **Admin Master:** `admin@skillchain.org` / `adminpassword`
-* **Instituição de Ensino:** `uniateneu@uniateneu` / `123`
-* **ID para Validação Pública (VÁLIDO):** `941599477` (digite este ID na barra de busca de verificação para testar a resposta apartir da blockchain).
-* **ID para Validação Pública (REVOGADO):** `401180492` (digite este ID na barra de busca de verificação para testar a resposta apartir da blockchain).
+### 1. Contas de Login (E-mail e Senha)
 
----
-## Equipe
+* 🔴 **Administrador Master** (Aprova instituições e gerencia o sistema)
+  * **E-mail:** `admin@skillchain.org`
+  * **Senha:** `adminpassword`
+  * **Role:** `Admin`
+  * **Carteira:** `0x3302beC705ef21e65566e2E841D7A0204fF1820b` (Admin Máximo no Smart Contract com assinaturas liberadas, sem necessidade de conectar carteira via MetaMask para ações administrativas)
 
-- Jackson Lorran do Nascimento (jackson.nasc20@gmail.cain e atesta se o emissor era autorizado e se o hash confere com o registrado em blockchain.
-
----
-
-## ⚙️ Arquitetura Tecnológica
-
-O projeto é estruturado em um monorepo dividido em duas partes principais:
-
-* **Frontend (React + Vite):**
-  * **Estilização:** Tailwind CSS v4 para uma interface moderna, minimalista e responsiva em tons de azul escuro e cinza.
-  * **Animações:** Framer Motion para transições de página e feedbacks de carregamento fluidos.
-  * **Web3 Integration:** Ethers.js v6 para comunicação direta com a MetaMask e leitura de contratos na rede Sepolia.
-* **Backend (Node.js + Express):**
-  * Banco de dados JSON leve e auto-semeável (seeding automatizado para facilidade em apresentações).
-  * Adaptado para rodar sob **Vercel Serverless Functions**, utilizando o diretório temporário `/tmp` para gravação de novos cadastros em tempo real.
-* **Contratos Inteligentes (Solidity + Hardhat):**
-  * Contrato `SkillChain.sol` contendo a governança de aprovação de instituições e a emissão e revogação de certificados.
-  * Compilado e testado usando a suíte Hardhat.
+* 🏢 **Instituição de Ensino** (Cadastra cursos e emite certificados)
+  * **E-mail:** `uniateneu@uniateneu.org`
+  * **Senha:** `123`
+  * **Role:** `Institution` (Já aprovada pelo admin)
+  * **Carteira Associada:** `0xB3f6C35D82fD4F130282126B04efc10f94f4BCAe`
 
 ---
 
-## 🚀 Como Executar o Projeto Localmente
+### 2. Certificados em Blockchain de Teste (Para validação pública)
 
-### Pré-requisitos
-* Node.js (v18 ou superior)
-* Extensão da carteira MetaMask instalada no navegador (caso queira testar a integração com a Blockchain)
+Você pode digitar qualquer um dos IDs abaixo na barra de busca pública de verificação para visualizar o status do certificado:
 
-### 1. Clonando o Repositório e Configurando o Backend
-Entre na pasta do backend, instale as dependências e configure o arquivo `.env`:
+* **Certificado Válido / Ativo:**
+  * **ID de Validação:** `162051003`
+  * **Hash da Transação (Blockchain):** `0xee3406bcfb859338e4ffdca4773a458f3ee0890a682fe2ba8d6b6b87849bef63`
+  * **Hash IPFS:** `QmZ23xG5bMs5EumBWNNtbmFn2zVUxcy5BrkqXyLHJ5NcBd`
+  * **Nome do Aluno:** `jackson lorran`
+  * **Instituição Emissora:** `uniateneu`
+  * **Status:** `ATIVO / VÁLIDO`
 
-```bash
-cd backend
-npm install
-```
-
-Crie um arquivo `.env` na pasta `backend/` seguindo o modelo:
-```env
-PORT=5000
-JWT_SECRET=sua_chave_secreta_jwt
-ALCHEMY_API_KEY=sua_api_key_do_alchemy_ou_infura
-SEPOLIA_PRIVATE_KEY=sua_chave_privada_da_carteira_sepolia
-```
-
-Inicie o servidor de desenvolvimento do backend:
-```bash
-npm run dev
-```
-O servidor estará rodando em `http://localhost:5000`.
-
-### 2. Configurando o Frontend
-Abra um novo terminal na raiz do projeto, navegue até a pasta do frontend e instale as dependências:
-
-```bash
-cd frontend
-npm install
-```
-
-Inicie o servidor de desenvolvimento do frontend:
-```bash
-npm run dev
-```
-O frontend estará acessível em `http://localhost:5173`.
+* **Certificado Revogado / Suspenso:**
+  * **ID de Validação:** `961939237`
+  * **Hash da Transação (Blockchain):** `0x82455a9b867a994bd6bf2e5553493b62184d4d92bee4c26e400d156187a19603`
+  * **Hash IPFS:** `QmRb976KxR853n6Rm8F2qZKKQPqcbbmGRRoEhepDzL8ZTj`
+  * **Nome do Aluno:** `joao batista`
+  * **Instituição Emissora:** `unifametro`
+  * **Status:** `REVOGADO / SUSPENSO`
 
 ---
 
-## ⛓️ Informações de Deploy (Produção)
+## 👥 Equipe
 
-### Smart Contract (Sepolia Testnet)
-O contrato inteligente foi implantado no seguinte endereço:
-* **Contrato:** `0x2351562952afb48bf847C96065531e724658Da2F`
-* **Explorador:** [Sepolia Etherscan Link](https://sepolia.etherscan.io/address/0x2351562952afb48bf847C96065531e724658Da2F)
-
-### Hospedagem (Vercel)
-O frontend e o backend estão rodando de forma unificada sob o mesmo link na Vercel:
-* **URL:** [https://hackweb-skillchain.vercel.app/](https://hackweb-skillchain.vercel.app/)
-
----
-
-## 🔑 Dados para Apresentação (Demo)
-
-Para testar a aplicação sem precisar criar dados do zero, utilize as contas pré-carregadas descritas no arquivo [dados_demo.txt](./dados_demo.txt):
-
-* **Admin Master:** `admin@skillchain.org` / `adminpassword`
-* **Instituição de Ensino:** `uniateneu@uniateneu` / `123`
-* **ID para Validação Pública (VÁLIDO):** `941599477` (digite este ID na barra de busca de verificação para testar a resposta apartir da blockchain).
-* **ID para Validação Pública (REVOGADO):** `401180492` (digite este ID na barra de busca de verificação para testar a resposta apartir da blockchain).
-
----
-## Equipe
-
-- Jackson Lorran do Nascimentoom)
+* **Jackson Lorran do Nascimento** - (jackson.nasc20@gmail.com)
