@@ -282,9 +282,6 @@ export default function Dashboard() {
     const { studentName, studentEmail, courseId, ipfsHash } = certForm
     if (!studentName || !studentEmail || !courseId) return
 
-    // Generate mock IPFS CID if empty
-    const finalIpfsHash = ipfsHash.trim() || `Qm${Array.from({length: 44}, () => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*62)]).join('')}`
-    
     setLoading(true)
     setMessage(null)
     
@@ -293,7 +290,32 @@ export default function Dashboard() {
       // Generate random unique 9 digit ID for contract and database
       const mockId = Math.floor(Math.random() * 900000000) + 100000000
       
-      // 1. We MUST call the Smart Contract on-chain
+      // Find selected course info
+      const course = courses.find(c => c.id === courseId)
+      if (!course) {
+        throw new Error('Curso selecionado não encontrado.')
+      }
+
+      let finalIpfsHash = ipfsHash.trim()
+
+      // 1. Upload metadata to IPFS automatically if no manual hash is provided
+      if (!finalIpfsHash) {
+        setMessage({
+          type: 'info',
+          text: 'Gerando metadados e enviando ao IPFS descentralizado...'
+        })
+        const ipfsResult = await apiService.institution.uploadIPFS(
+          mockId.toString(),
+          studentEmail,
+          studentName,
+          course.title,
+          course.workloadHours
+        )
+        finalIpfsHash = ipfsResult.ipfsHash
+        console.log('IPFS Upload Result:', ipfsResult)
+      }
+      
+      // 2. We MUST call the Smart Contract on-chain
       if (!blockchainService.contract) {
         try {
           await blockchainService.connectWallet(false)
@@ -312,11 +334,20 @@ export default function Dashboard() {
       const hashBuffer = await crypto.subtle.digest('SHA-256', data)
       const studentHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('')
       
+      setMessage({
+        type: 'info',
+        text: 'Aguardando confirmação de assinatura na MetaMask para registrar na blockchain...'
+      })
       const tx = await blockchainService.contract.issueCertificate(mockId, finalIpfsHash, studentHash)
+      
+      setMessage({
+        type: 'info',
+        text: 'Processando transação on-chain na rede Sepolia...'
+      })
       const receipt = await tx.wait()
       transactionHash = receipt.hash
 
-      // 2. Post to backend REST API (only if on-chain transaction succeeded!)
+      // 3. Post to backend REST API (only if on-chain transaction succeeded!)
       const res = await apiService.institution.issueCertificate(
         mockId.toString(),
         studentEmail,
@@ -330,7 +361,7 @@ export default function Dashboard() {
       setCertForm({ studentName: '', studentEmail: '', courseId: '', ipfsHash: '' })
       setMessage({
         type: 'success',
-        text: `Certificado emitido com sucesso! ID: #${res.certificate.id}. Registrado na blockchain (on-chain).`
+        text: `Certificado emitido com sucesso! ID: #${res.certificate.id}. Salvo no IPFS e registrado na blockchain Sepolia.`
       })
     } catch (err) {
       console.error(err)
@@ -437,10 +468,14 @@ export default function Dashboard() {
         <div className={`mb-6 p-4 rounded-xl text-sm border flex items-start gap-2.5 ${
           message.type === 'success' 
             ? 'bg-emerald-50 border-emerald-100 text-emerald-800' 
-            : 'bg-red-50 border-red-100 text-red-800'
+            : message.type === 'info'
+              ? 'bg-blue-50 border-blue-100 text-blue-800'
+              : 'bg-red-50 border-red-100 text-red-800'
         }`}>
           {message.type === 'success' ? (
             <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+          ) : message.type === 'info' ? (
+            <div className="h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin flex-shrink-0 mt-0.5" />
           ) : (
             <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
           )}

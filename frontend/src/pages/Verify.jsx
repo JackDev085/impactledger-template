@@ -216,7 +216,7 @@ export default function Verify() {
 
                 <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 space-y-3 font-mono text-xs">
                   <div className="flex justify-between items-start gap-4">
-                    <span className="text-slate-500 flex-shrink-0">HASH IPFS (PDF):</span>
+                    <span className="text-slate-500 flex-shrink-0">HASH IPFS (Metadata):</span>
                     <a
                       href={`https://ipfs.io/ipfs/${result.ipfsHash}`}
                       target="_blank"

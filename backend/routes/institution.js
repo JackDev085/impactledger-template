@@ -1,4 +1,5 @@
 import express from 'express'
+import crypto from 'crypto'
 import db from '../db.js'
 import { authenticateToken, requireRole } from '../middleware/auth.js'
 
@@ -52,6 +53,93 @@ router.post('/courses', (req, res) => {
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Failed to create course' })
+  }
+})
+
+// Upload certificate metadata to IPFS (via Pinata)
+router.post('/upload-ipfs', async (req, res) => {
+  try {
+    const { id, studentEmail, studentName, courseTitle, workloadHours } = req.body
+
+    if (!id || !studentEmail || !studentName || !courseTitle || !workloadHours) {
+      return res.status(400).json({ message: 'Todos os campos são obrigatórios' })
+    }
+
+    const metadata = {
+      id: String(id),
+      studentName,
+      studentEmail: studentEmail.toLowerCase(),
+      courseTitle,
+      workloadHours: parseInt(workloadHours),
+      issuerName: req.user.username,
+      issuerWallet: req.user.walletAddress || '',
+      issuedAt: new Date().toISOString(),
+      description: "Certificado educacional criptograficamente seguro e auditável on-chain.",
+      blockchainNetwork: "Ethereum Sepolia Testnet"
+    }
+
+    const pinataApiKey = process.env.PINATA_API_KEY
+    const pinataSecretKey = process.env.PINATA_API_SECRET
+    const pinataJwt = process.env.PINATA_JWT || process.env.PINATA_SECRET_JWT || process.env.PINATA_SECRET_JTW
+
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+
+    let canUpload = false
+    if (pinataJwt) {
+      headers['Authorization'] = `Bearer ${pinataJwt}`
+      canUpload = true
+    } else if (pinataApiKey && pinataSecretKey) {
+      headers['pinata_api_key'] = pinataApiKey
+      headers['pinata_secret_api_key'] = pinataSecretKey
+      canUpload = true
+    }
+
+    if (canUpload) {
+      console.log(`📤 Enviando metadados do certificado #${id} para o IPFS via Pinata...`)
+      
+      const pinataResponse = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          pinataContent: metadata,
+          pinataMetadata: {
+            name: `Certificate-${id}`
+          }
+        })
+      })
+
+      if (!pinataResponse.ok) {
+        const errorText = await pinataResponse.text()
+        throw new Error(`Pinata API returned status ${pinataResponse.status}: ${errorText}`)
+      }
+
+      const pinataData = await pinataResponse.json()
+      console.log(`✅ Certificado #${id} enviado com sucesso. CID IPFS: ${pinataData.IpfsHash}`)
+      
+      return res.json({
+        success: true,
+        ipfsHash: pinataData.IpfsHash,
+        metadata
+      })
+    } else {
+      console.warn('⚠️ PINATA_API_KEY ou PINATA_API_SECRET não configurados. Gerando CID offline de teste...')
+      
+      // Generate offline IPFS CID
+      const mockHash = crypto.createHash('sha256').update(JSON.stringify(metadata)).digest('hex')
+      const mockCid = `Qm${mockHash.substring(0, 44)}`
+
+      return res.json({
+        success: true,
+        ipfsHash: mockCid,
+        metadata,
+        offline: true
+      })
+    }
+  } catch (err) {
+    console.error('Erro de upload para o IPFS:', err)
+    res.status(500).json({ message: 'Falha ao fazer upload dos metadados para o IPFS', error: err.message })
   }
 })
 

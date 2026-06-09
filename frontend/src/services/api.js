@@ -104,6 +104,18 @@ export const apiService = {
       return handleResponse(res)
     },
 
+    uploadIPFS: async (id, studentEmail, studentName, courseTitle, workloadHours) => {
+      const res = await fetch(`${API_BASE_URL}/institution/upload-ipfs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
+        body: JSON.stringify({ id, studentEmail, studentName, courseTitle, workloadHours })
+      })
+      return handleResponse(res)
+    },
+
     issueCertificate: async (id, studentEmail, studentName, courseId, certificateHash, transactionHash) => {
       const res = await fetch(`${API_BASE_URL}/institution/certificates`, {
         method: 'POST',

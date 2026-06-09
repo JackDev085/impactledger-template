@@ -4,6 +4,38 @@ import { contract } from '../blockchain.js'
 
 const router = express.Router()
 
+// Helper to fetch JSON metadata from public IPFS gateways
+const fetchIpfsMetadata = async (cid) => {
+  if (!cid || !cid.startsWith('Qm')) return null
+  
+  // Try multiple gateways for reliability
+  const gateways = [
+    `https://gateway.pinata.cloud/ipfs/${cid}`,
+    `https://ipfs.io/ipfs/${cid}`,
+    `https://cloudflare-ipfs.com/ipfs/${cid}`
+  ]
+  
+  for (const url of gateways) {
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 4000) // 4 seconds timeout
+      
+      const response = await fetch(url, { signal: controller.signal })
+      clearTimeout(timeoutId)
+      
+      if (response.ok) {
+        const data = await response.json()
+        if (data && (data.studentName || data.courseTitle)) {
+          return data
+        }
+      }
+    } catch (e) {
+      console.warn(`[IPFS Verify] Gateway failed for ${url}:`, e.message)
+    }
+  }
+  return null
+}
+
 // Public endpoint to verify a certificate by ID or hash
 router.get('/:id', async (req, res) => {
   try {
@@ -24,20 +56,32 @@ router.get('/:id', async (req, res) => {
         const [isValid, certificateHash, studentHash, issuer, issuedAt, revoked] = await contract.verifyCertificate(certId)
         
         if (issuer !== '0x0000000000000000000000000000000000000000') {
+          let ipfsData = null
+          if (!certDb && certificateHash) {
+            console.log(`🔍 Resolvendo metadados do IPFS para CID: ${certificateHash}...`)
+            ipfsData = await fetchIpfsMetadata(certificateHash)
+          }
+
+          const studentName = certDb ? certDb.studentName : (ipfsData ? ipfsData.studentName : 'Estudante Verificado On-Chain')
+          const studentEmail = certDb ? certDb.studentEmail : (ipfsData ? ipfsData.studentEmail : '')
+          const courseTitle = certDb ? certDb.courseTitle : (ipfsData ? ipfsData.courseTitle : 'Curso Verificado On-Chain')
+          const workloadHours = certDb ? certDb.workloadHours : (ipfsData ? ipfsData.workloadHours : 0)
+          const issuerName = certDb ? certDb.issuerName : (ipfsData ? ipfsData.issuerName : 'Instituição Homologada')
+
           return res.json({
             exists: true,
             isValid: isValid && !revoked,
             blockchainVerified: true,
             certificate: {
               id: certId.toString(),
-              studentName: certDb ? certDb.studentName : 'Blockchain Verified Student',
-              studentEmail: certDb ? certDb.studentEmail : '',
+              studentName,
+              studentEmail,
               studentHash: studentHash,
-              courseTitle: certDb ? certDb.courseTitle : 'Blockchain Verified Course',
-              workloadHours: certDb ? certDb.workloadHours : 0,
+              courseTitle,
+              workloadHours: Number(workloadHours),
               certificateHash: certificateHash,
-              transactionHash: certDb ? certDb.transactionHash : 'Recorded on Chain',
-              issuerName: certDb ? certDb.issuerName : 'Approved Institution',
+              transactionHash: certDb ? certDb.transactionHash : 'Registrado em Bloco',
+              issuerName,
               issuerId: certDb ? certDb.issuerId : '',
               issuerWallet: issuer,
               status: (revoked || !isValid) ? 'revoked' : 'active',
@@ -59,11 +103,11 @@ router.get('/:id', async (req, res) => {
     return res.status(404).json({
       exists: false,
       isValid: false,
-      message: 'Certificate not registered in system'
+      message: 'Certificado não registrado no sistema'
     })
   } catch (err) {
     console.error('Verification error:', err)
-    res.status(500).json({ message: 'Internal server error during verification' })
+    res.status(500).json({ message: 'Erro interno durante a verificação' })
   }
 })
 
