@@ -44,20 +44,16 @@ router.get('/:id', async (req, res) => {
               issuedAt: new Date(Number(issuedAt) * 1000).toISOString()
             }
           })
+        } else {
+          return res.status(404).json({
+            exists: false,
+            isValid: false,
+            message: 'Certificado não registrado na blockchain'
+          })
         }
       } catch (chainErr) {
-        console.error('Failed to verify on blockchain, falling back to database:', chainErr)
+        console.error('Failed to verify on blockchain:', chainErr)
       }
-    }
-
-    // Fallback to database verification
-    if (certDb) {
-      return res.json({
-        exists: true,
-        isValid: certDb.status === 'active',
-        blockchainVerified: false,
-        certificate: certDb
-      })
     }
 
     return res.status(404).json({

@@ -27,7 +27,7 @@ export default function Verify() {
           courseName: cert.courseTitle,
           workload: cert.workloadHours,
           studentName: cert.studentName,
-          studentHash: cert.studentHash || cert.studentEmail, // fallback to email representation
+          studentHash: cert.studentHash || cert.studentEmail,
           issuerName: cert.issuerName,
           issuer: cert.issuerWallet || cert.issuerId,
           issuedAt: cert.issuedAt,
@@ -43,7 +43,6 @@ export default function Verify() {
       console.warn('API verification check failed or returned empty. Retrying via Web3 provider:', err)
     }
 
-    // 2. Web3 / LocalStorage Fallback provider
     try {
       const data = await blockchainService.verifyCertificate(certId)
       setResult(data)
@@ -118,13 +117,12 @@ export default function Verify() {
           className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm"
         >
           {/* Header Banner */}
-          <div className={`p-6 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${
-            result.isValid 
-              ? 'bg-emerald-50/60 border-emerald-100' 
-              : result.revoked 
-                ? 'bg-red-50/60 border-red-100' 
-                : 'bg-amber-50/60 border-amber-100'
-          }`}>
+          <div className={`p-6 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${result.isValid
+            ? 'bg-emerald-50/60 border-emerald-100'
+            : result.revoked
+              ? 'bg-red-50/60 border-red-100'
+              : 'bg-amber-50/60 border-amber-100'
+            }`}>
             <div className="flex items-center gap-3">
               {result.isValid ? (
                 <>
@@ -215,7 +213,7 @@ export default function Verify() {
               {/* Blockchain Evidence Trail */}
               <div className="pt-6 border-t border-slate-100 space-y-4">
                 <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Histórico de Auditoria em Blockchain</h4>
-                
+
                 <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 space-y-3 font-mono text-xs">
                   <div className="flex justify-between items-start gap-4">
                     <span className="text-slate-500 flex-shrink-0">HASH IPFS (PDF):</span>
@@ -244,10 +242,10 @@ export default function Verify() {
                   <div className="flex justify-between items-center pt-2 border-t border-slate-200/40">
                     <span className="text-slate-500">LIVRO DE REGISTRO:</span>
                     <span className="text-slate-800 font-semibold uppercase">
-                      {result.mode === 'blockchain' 
-                        ? '🟢 ETHEREUM SEPOLIA (VERIFICADO ON-CHAIN)' 
-                        : result.mode === 'database' 
-                          ? '🟡 APENAS BANCO DE DADOS LOCAL (NÃO ON-CHAIN)' 
+                      {result.mode === 'blockchain'
+                        ? '🟢 ETHEREUM SEPOLIA (VERIFICADO ON-CHAIN)'
+                        : result.mode === 'database'
+                          ? '🟡 APENAS BANCO DE DADOS LOCAL (NÃO ON-CHAIN)'
                           : '🔵 MOCK BLOCKCHAIN (DEMO)'}
                     </span>
                   </div>

@@ -63,11 +63,9 @@ class JSONDatabase {
   }
 
   seed() {
-    console.log('🌱 Seeding database with initial demo data for the hackathon...')
+    console.log('🌱 Seeding database with initial admin data...')
     
     const adminPasswordHash = bcrypt.hashSync('adminpassword', 10)
-    const mitPasswordHash = bcrypt.hashSync('mitpassword', 10)
-    const johnPasswordHash = bcrypt.hashSync('johnpassword', 10)
 
     this.data.users = [
       {
@@ -79,60 +77,14 @@ class JSONDatabase {
         walletAddress: '0x3302beC705ef21e65566e2E841D7A0204fF1820b'.toLowerCase(),
         isApproved: true,
         createdAt: new Date().toISOString()
-      },
-      {
-        id: 'mit-id',
-        username: 'MIT University',
-        email: 'mit@edu.org',
-        passwordHash: mitPasswordHash,
-        role: 'institution',
-        walletAddress: '0x1111222233334444555566667777888899990000'.toLowerCase(),
-        isApproved: true,
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: 'john-id',
-        username: 'John Doe',
-        email: 'john@doe.com',
-        passwordHash: johnPasswordHash,
-        role: 'student',
-        walletAddress: null,
-        isApproved: true,
-        createdAt: new Date().toISOString()
       }
     ]
 
-    this.data.courses = [
-      {
-        id: 'yfq532t0w',
-        title: 'Solidity Development Masterclass',
-        description: 'Complete hands-on Ethereum development course.',
-        workloadHours: 40,
-        institutionId: 'mit-id',
-        createdAt: new Date().toISOString()
-      }
-    ]
-
-    this.data.certificates = [
-      {
-        id: '2jwr91084',
-        studentEmail: 'john@doe.com',
-        studentName: 'John Doe',
-        courseId: 'yfq532t0w',
-        courseTitle: 'Solidity Development Masterclass',
-        workloadHours: 40,
-        certificateHash: 'QmXoypizjW3WknFixtdKLw6yS47n3kX488C9Z235bX798f',
-        transactionHash: '0x3219aa2e537e2ab77112009ef327e5c70ba9db32192138eb12ab34d7ef8109bf',
-        issuerName: 'MIT University',
-        issuerWallet: '0x1111222233334444555566667777888899990000'.toLowerCase(),
-        status: 'active',
-        issuedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString()
-      }
-    ]
+    this.data.courses = []
+    this.data.certificates = []
 
     this.save()
-    console.log('✅ Demo database seeded successfully.')
+    console.log('✅ Database seeded with admin user.')
   }
 
   save() {
