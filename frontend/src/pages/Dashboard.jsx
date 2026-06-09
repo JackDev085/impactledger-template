@@ -110,7 +110,7 @@ export default function Dashboard() {
           try {
             const user = await blockchainService.connectWallet()
             setWalletUser(user)
-            setMessage({ type: 'success', text: `Wallet switched to: ${user.address}` })
+            setMessage({ type: 'success', text: `Carteira alterada para: ${user.address}` })
           } catch (err) {
             console.error('Wallet account switch failed:', err)
           }
@@ -132,11 +132,11 @@ export default function Dashboard() {
       if (user && user.address) {
         setRegisterForm(prev => ({ ...prev, walletAddress: user.address }))
         setWalletUser(user)
-        setMessage({ type: 'success', text: `Wallet connected! Address pre-filled.` })
+        setMessage({ type: 'success', text: `Carteira conectada! Endereço preenchido automaticamente.` })
       }
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: 'MetaMask connection failed. Enter address manually.' })
+      setMessage({ type: 'error', text: 'Falha na conexão com a MetaMask. Insira o endereço manualmente.' })
     } finally {
       setLoading(false)
     }
@@ -148,10 +148,10 @@ export default function Dashboard() {
     try {
       const user = await blockchainService.connectWallet(true)
       setWalletUser(user)
-      setMessage({ type: 'success', text: `MetaMask wallet connected successfully: ${user.address}` })
+      setMessage({ type: 'success', text: `Carteira MetaMask conectada com sucesso: ${user.address}` })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.message || 'MetaMask connection failed.' })
+      setMessage({ type: 'error', text: err.message || 'Falha na conexão com a MetaMask.' })
     } finally {
       setLoading(false)
     }
@@ -160,7 +160,7 @@ export default function Dashboard() {
   const handleDisconnectWallet = () => {
     blockchainService.disconnectWallet()
     setWalletUser(null)
-    setMessage({ type: 'success', text: 'MetaMask wallet disconnected.' })
+    setMessage({ type: 'success', text: 'Carteira MetaMask desconectada.' })
   }
 
   // Auth Handlers
@@ -183,10 +183,10 @@ export default function Dashboard() {
       }
       
       await loadData(data.user)
-      setMessage({ type: 'success', text: `Welcome back, ${data.user.username}!` })
+      setMessage({ type: 'success', text: `Bem-vindo(a) de volta, ${data.user.username}!` })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.message || 'Login failed. Check your credentials.' })
+      setMessage({ type: 'error', text: err.message || 'Falha no login. Verifique suas credenciais.' })
     } finally {
       setLoading(false)
     }
@@ -197,7 +197,7 @@ export default function Dashboard() {
     const { username, email, password, role, walletAddress } = registerForm
     if (!username || !email || !password || !role) return
     if (role === 'institution' && !walletAddress) {
-      setMessage({ type: 'error', text: 'Wallet Address is required for Institutions.' })
+      setMessage({ type: 'error', text: 'O endereço da carteira é obrigatório para Instituições.' })
       return
     }
 
@@ -205,12 +205,12 @@ export default function Dashboard() {
     setMessage(null)
     try {
       await apiService.auth.register(username, email, password, role, walletAddress)
-      setMessage({ type: 'success', text: 'Registration successful! You can now log in.' })
+      setMessage({ type: 'success', text: 'Cadastro realizado com sucesso! Agora você pode entrar.' })
       setAuthTab('login')
       setLoginForm({ email, password })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.message || 'Registration failed.' })
+      setMessage({ type: 'error', text: err.message || 'Falha no cadastro.' })
     } finally {
       setLoading(false)
     }
@@ -222,7 +222,7 @@ export default function Dashboard() {
     setWalletUser(null)
     setCurrentUser(null)
     setActiveTab('')
-    setMessage({ type: 'success', text: 'Successfully logged out.' })
+    setMessage({ type: 'success', text: 'Sessão encerrada com sucesso.' })
   }
 
   // Admin Actions
@@ -233,10 +233,10 @@ export default function Dashboard() {
       // 1. REST API Approval (registers the institution on-chain via backend wallet)
       await apiService.admin.approveInstitution(id)
       await loadData(currentUser)
-      setMessage({ type: 'success', text: `Institution "${name}" approved and registered on-chain.` })
+      setMessage({ type: 'success', text: `Instituição "${name}" aprovada e registrada na blockchain (on-chain).` })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.message || 'Failed to approve institution' })
+      setMessage({ type: 'error', text: err.message || 'Falha ao aprovar instituição' })
     } finally {
       setLoading(false)
     }
@@ -249,10 +249,10 @@ export default function Dashboard() {
       // 1. REST API Deactivation (deactivates the institution on-chain via backend wallet)
       await apiService.admin.deactivateInstitution(id)
       await loadData(currentUser)
-      setMessage({ type: 'success', text: `Institution "${name}" deactivated on-chain and database updated.` })
+      setMessage({ type: 'success', text: `Instituição "${name}" desativada na blockchain (on-chain) e banco de dados atualizado.` })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.message || 'Failed to deactivate institution' })
+      setMessage({ type: 'error', text: err.message || 'Falha ao desativar instituição' })
     } finally {
       setLoading(false)
     }
@@ -268,10 +268,10 @@ export default function Dashboard() {
       await apiService.institution.createCourse(courseForm.name, courseForm.description, courseForm.workload)
       await loadData(currentUser)
       setCourseForm({ name: '', description: '', workload: '' })
-      setMessage({ type: 'success', text: 'Course added to catalog successfully.' })
+      setMessage({ type: 'success', text: 'Curso adicionado ao catálogo com sucesso.' })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.message || 'Failed to add course.' })
+      setMessage({ type: 'error', text: err.message || 'Falha ao adicionar curso.' })
     } finally {
       setLoading(false)
     }
@@ -298,12 +298,12 @@ export default function Dashboard() {
         try {
           await blockchainService.connectWallet(false)
         } catch (connErr) {
-          throw new Error('Web3 wallet is not connected. Please connect MetaMask to perform on-chain actions.')
+          throw new Error('A carteira Web3 não está conectada. Por favor, conecte a MetaMask para realizar ações na blockchain.')
         }
       }
 
       if (!blockchainService.contract) {
-        throw new Error('Web3 wallet is not connected. Please connect MetaMask to perform on-chain actions.')
+        throw new Error('A carteira Web3 não está conectada. Por favor, conecte a MetaMask para realizar ações na blockchain.')
       }
 
       // Generate a local identifier hash representing the student email
@@ -330,18 +330,18 @@ export default function Dashboard() {
       setCertForm({ studentName: '', studentEmail: '', courseId: '', ipfsHash: '' })
       setMessage({
         type: 'success',
-        text: `Certificate issued successfully! ID: #${res.certificate.id}. Logged to blockchain on-chain.`
+        text: `Certificado emitido com sucesso! ID: #${res.certificate.id}. Registrado na blockchain (on-chain).`
       })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.reason || err.message || 'Failed to issue certificate' })
+      setMessage({ type: 'error', text: err.reason || err.message || 'Falha ao emitir certificado' })
     } finally {
       setLoading(false)
     }
   }
 
   const handleRevokeCert = async (id) => {
-    if (!window.confirm(`Are you sure you want to revoke certificate #${id}? This action will stamp it as invalid in both the database and the blockchain registry.`)) return
+    if (!window.confirm(`Tem certeza de que deseja revogar o certificado #${id}? Esta ação irá marcá-lo como inválido no banco de dados e no registro da blockchain.`)) return
     setLoading(true)
     setMessage(null)
     try {
@@ -350,12 +350,12 @@ export default function Dashboard() {
         try {
           await blockchainService.connectWallet(false)
         } catch (connErr) {
-          throw new Error('Web3 wallet is not connected. Please connect MetaMask to perform on-chain actions.')
+          throw new Error('A carteira Web3 não está conectada. Por favor, conecte a MetaMask para realizar ações na blockchain.')
         }
       }
 
       if (!blockchainService.contract) {
-        throw new Error('Web3 wallet is not connected. Please connect MetaMask to perform on-chain actions.')
+        throw new Error('A carteira Web3 não está conectada. Por favor, conecte a MetaMask para realizar ações na blockchain.')
       }
 
       const tx = await blockchainService.revokeCertificate(id)
@@ -364,10 +364,10 @@ export default function Dashboard() {
       // 2. REST API Revocation
       await apiService.institution.revokeCertificate(id)
       await loadData(currentUser)
-      setMessage({ type: 'success', text: `Certificate #${id} successfully revoked on-chain and database.` })
+      setMessage({ type: 'success', text: `Certificado #${id} revogado com sucesso na blockchain e no banco de dados.` })
     } catch (err) {
       console.error(err)
-      setMessage({ type: 'error', text: err.reason || err.message || 'Failed to revoke certificate' })
+      setMessage({ type: 'error', text: err.reason || err.message || 'Falha ao revogar certificado' })
     } finally {
       setLoading(false)
     }
@@ -378,9 +378,9 @@ export default function Dashboard() {
       {/* Header Banner */}
       <div className="border-b border-slate-200/80 pb-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">SkillChain Workspace</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Workspace SkillChain</h1>
           <p className="text-slate-600 text-sm mt-1">
-            Manage academic institutions, register courses, and issue cryptographically secure certificates.
+            Gerencie instituições de ensino, registre cursos e emita certificados criptograficamente seguros.
           </p>
         </div>
 
@@ -395,9 +395,9 @@ export default function Dashboard() {
                     <button 
                       onClick={handleDisconnectWallet}
                       className="ml-1.5 text-[10px] font-bold text-emerald-600 hover:text-emerald-900 underline uppercase tracking-wider"
-                      title="Disconnect Wallet"
+                      title="Desconectar Carteira"
                     >
-                      Disconnect
+                      Desconectar
                     </button>
                   </div>
                 ) : (
@@ -406,23 +406,25 @@ export default function Dashboard() {
                     className="flex items-center gap-1.5 bg-brand-50 border border-brand-100 hover:bg-brand-100 hover:border-brand-200 transition-colors rounded-lg px-3 py-1.5 text-xs font-bold text-brand-700"
                   >
                     <Wallet className="h-3.5 w-3.5" />
-                    <span>Connect MetaMask</span>
+                    <span>Conectar MetaMask</span>
                   </button>
                 )}
               </div>
             )}
             <div className="text-right">
-              <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Logged In As</span>
+              <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">Conectado como</span>
               <span className="font-semibold text-slate-800 text-sm block">{currentUser.username}</span>
               <span className="text-[10px] text-slate-500 block">
-                Role: <span className="font-bold text-brand-600 capitalize">{currentUser.role}</span>
+                Função: <span className="font-bold text-brand-600 capitalize">
+                  {currentUser.role === 'admin' ? 'Administrador' : currentUser.role === 'student' ? 'Estudante' : 'Instituição'}
+                </span>
                 {currentUser.walletAddress && ` | ${currentUser.walletAddress.substring(0, 6)}...${currentUser.walletAddress.substring(38)}`}
               </span>
             </div>
             <button
               onClick={handleLogout}
               className="p-2 border border-slate-200 rounded-lg hover:text-red-600 hover:border-red-100 transition-colors bg-white text-slate-500"
-              title="Log Out"
+              title="Sair"
             >
               <LogOut className="h-4.5 w-4.5" />
             </button>
@@ -456,7 +458,7 @@ export default function Dashboard() {
                 authTab === 'login' ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-400 hover:text-slate-600'
               }`}
             >
-              Sign In
+              Entrar
             </button>
             <button
               onClick={() => { setAuthTab('register'); setMessage(null); }}
@@ -464,14 +466,14 @@ export default function Dashboard() {
                 authTab === 'register' ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-400 hover:text-slate-600'
               }`}
             >
-              Create Account
+              Criar Conta
             </button>
           </div>
 
           {authTab === 'login' ? (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Email Address</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Endereço de E-mail</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
                   <input
@@ -479,13 +481,13 @@ export default function Dashboard() {
                     required
                     value={loginForm.email}
                     onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                    placeholder="you@domain.com"
+                    placeholder="voce@dominio.com"
                     className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Password</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Senha</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
                   <input
@@ -503,13 +505,13 @@ export default function Dashboard() {
                 disabled={loading}
                 className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm py-2.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 mt-6"
               >
-                {loading ? <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Sign In'}
+                {loading ? <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Entrar'}
               </button>
             </form>
           ) : (
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Full Name / Institution Name</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Nome Completo / Nome da Instituição</label>
                 <div className="relative">
                   <User className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
                   <input
@@ -517,13 +519,13 @@ export default function Dashboard() {
                     required
                     value={registerForm.username}
                     onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
-                    placeholder="e.g. Stanford University"
+                    placeholder="ex: Universidade Federal"
                     className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Email Address</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Endereço de E-mail</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
                   <input
@@ -531,13 +533,13 @@ export default function Dashboard() {
                     required
                     value={registerForm.email}
                     onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
-                    placeholder="partner@domain.com"
+                    placeholder="parceiro@dominio.com"
                     className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Password</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Senha</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
                   <input
@@ -545,13 +547,13 @@ export default function Dashboard() {
                     required
                     value={registerForm.password}
                     onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                    placeholder="Min 6 characters"
+                    placeholder="Mínimo de 6 caracteres"
                     className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Account Role</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Função da Conta</label>
                 <div className="relative">
                   <Shield className="absolute left-3 top-2.5 h-4.5 w-4.5 text-slate-400" />
                   <select
@@ -559,8 +561,8 @@ export default function Dashboard() {
                     onChange={(e) => setRegisterForm({ ...registerForm, role: e.target.value })}
                     className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none bg-white focus:border-brand-500 transition-colors"
                   >
-                    <option value="student">Student / Credential Holder</option>
-                    <option value="institution">Educational Institution (Issuer)</option>
+                    <option value="student">Estudante / Portador de Credencial</option>
+                    <option value="institution">Instituição de Ensino (Emissor)</option>
                   </select>
                 </div>
               </div>
@@ -568,13 +570,13 @@ export default function Dashboard() {
               {registerForm.role === 'institution' && (
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1 flex justify-between items-center">
-                    <span>Ethereum Wallet Address</span>
+                    <span>Endereço de Carteira Ethereum</span>
                     <button
                       type="button"
                       onClick={handleAutofillWallet}
                       className="text-[10px] text-brand-600 hover:text-brand-800 font-semibold"
                     >
-                      Autofill from MetaMask
+                      Preencher automaticamente via MetaMask
                     </button>
                   </label>
                   <div className="relative">
@@ -589,7 +591,7 @@ export default function Dashboard() {
                     />
                   </div>
                   <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
-                    * Institutional profiles starting as pending. Registries must be approved by the smart contract admin.
+                    * Perfis institucionais começam com status pendente. Os registros devem ser aprovados pelo administrador do contrato inteligente.
                   </p>
                 </div>
               )}
@@ -599,7 +601,7 @@ export default function Dashboard() {
                 disabled={loading}
                 className="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm py-2.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 mt-6"
               >
-                {loading ? <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Register Account'}
+                {loading ? <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Cadastrar Conta'}
               </button>
             </form>
           )}
@@ -610,7 +612,7 @@ export default function Dashboard() {
           
           {/* Left Navigation Sidebar */}
           <div className="lg:col-span-1 space-y-1 bg-white border border-slate-200 rounded-2xl p-4 h-fit">
-            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">Workspace Modules</h3>
+            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">Módulos do Workspace</h3>
             
             {/* Admin Tabs */}
             {currentUser.role === 'admin' && (
@@ -621,7 +623,7 @@ export default function Dashboard() {
                 }`}
               >
                 <ShieldCheck className="h-4.5 w-4.5" />
-                Institutions Approval
+                Aprovação de Instituições
               </button>
             )}
 
@@ -634,7 +636,7 @@ export default function Dashboard() {
                 }`}
               >
                 <Activity className="h-4.5 w-4.5" />
-                My Portfolio
+                Meu Portfólio
               </button>
             )}
 
@@ -648,7 +650,7 @@ export default function Dashboard() {
                   }`}
                 >
                   <BookOpen className="h-4.5 w-4.5" />
-                  Course Catalog
+                  Catálogo de Cursos
                 </button>
                 <button
                   onClick={() => setActiveTab('issue')}
@@ -658,7 +660,7 @@ export default function Dashboard() {
                   }`}
                 >
                   <FilePlus className="h-4.5 w-4.5" />
-                  Issue Certificate
+                  Emitir Certificado
                 </button>
                 <button
                   onClick={() => setActiveTab('ledger')}
@@ -668,7 +670,7 @@ export default function Dashboard() {
                   }`}
                 >
                   <FileSpreadsheet className="h-4.5 w-4.5" />
-                  Verifiable Ledger
+                  Livro de Registro Verificável
                 </button>
               </>
             )}
@@ -682,9 +684,9 @@ export default function Dashboard() {
               <div className="mb-6 p-5 border border-amber-100 bg-amber-50/50 rounded-2xl flex items-start gap-4">
                 <AlertTriangle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Institution Verification Pending</h3>
+                  <h3 className="text-sm font-bold text-slate-900">Verificação de Instituição Pendente</h3>
                   <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                    Your institutional account under wallet address <code className="font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200">{currentUser.walletAddress}</code> is currently pending admin approval. You can define courses inside the catalog module, but you cannot issue verified certificates until approved.
+                    Sua conta institucional vinculada ao endereço de carteira <code className="font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200">{currentUser.walletAddress}</code> está atualmente pendente de aprovação do administrador. Você pode definir cursos no módulo do catálogo, mas não poderá emitir certificados verificados até que seja aprovado.
                   </p>
                 </div>
               </div>
@@ -703,13 +705,13 @@ export default function Dashboard() {
                   <div className="bg-white border border-slate-200 rounded-2xl p-6">
                     <div className="flex justify-between items-center mb-4">
                       <div>
-                        <h2 className="text-lg font-bold text-slate-900">Institutions Approvals</h2>
-                        <p className="text-xs text-slate-500 mt-0.5">Approve educational organizations to issue credentials.</p>
+                        <h2 className="text-lg font-bold text-slate-900">Aprovação de Instituições</h2>
+                        <p className="text-xs text-slate-500 mt-0.5">Aprove organizações educacionais para emitir credenciais.</p>
                       </div>
                       <button
                         onClick={() => loadData(currentUser)}
                         className="p-1 border border-slate-200 rounded text-slate-500 hover:text-slate-900 transition-colors bg-white"
-                        title="Refresh list"
+                        title="Atualizar lista"
                       >
                         <RefreshCw className="h-4 w-4" />
                       </button>
@@ -719,11 +721,11 @@ export default function Dashboard() {
                       <table className="w-full text-left text-sm text-slate-600">
                         <thead>
                           <tr className="border-b border-slate-100 text-xs font-bold uppercase text-slate-400">
-                            <th className="py-3 px-4">Name</th>
-                            <th className="py-3 px-4">Email</th>
-                            <th className="py-3 px-4">Wallet</th>
+                            <th className="py-3 px-4">Nome</th>
+                            <th className="py-3 px-4">E-mail</th>
+                            <th className="py-3 px-4">Carteira</th>
                             <th className="py-3 px-4">Status</th>
-                            <th className="py-3 px-4 text-right">Actions</th>
+                            <th className="py-3 px-4 text-right">Ações</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -738,7 +740,7 @@ export default function Dashboard() {
                                     ? 'bg-emerald-50 text-emerald-700' 
                                     : 'bg-amber-50 text-amber-700'
                                 }`}>
-                                  {inst.isApproved ? 'Approved' : 'Pending'}
+                                  {inst.isApproved ? 'Aprovada' : 'Pendente'}
                                 </span>
                               </td>
                               <td className="py-3.5 px-4 text-right">
@@ -747,14 +749,14 @@ export default function Dashboard() {
                                     onClick={() => handleDeactivateInstitution(inst.id, inst.username, inst.walletAddress)}
                                     className="text-xs font-semibold px-2.5 py-1.5 border border-red-100 text-red-600 rounded-lg hover:bg-red-50/50 transition-colors"
                                   >
-                                    Deactivate
+                                    Desativar
                                   </button>
                                 ) : (
                                   <button
                                     onClick={() => handleApproveInstitution(inst.id, inst.username, inst.walletAddress)}
                                     className="text-xs font-semibold px-2.5 py-1.5 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors"
                                   >
-                                    Approve
+                                    Aprovar
                                   </button>
                                 )}
                               </td>
@@ -763,7 +765,7 @@ export default function Dashboard() {
                           {institutions.length === 0 && (
                             <tr>
                               <td colSpan="5" className="py-8 text-center text-slate-400">
-                                No educational institutions registered yet.
+                                Nenhuma instituição de ensino cadastrada ainda.
                               </td>
                             </tr>
                           )}
@@ -783,37 +785,37 @@ export default function Dashboard() {
                   className="space-y-6"
                 >
                   <div className="bg-white border border-slate-200 rounded-2xl p-6">
-                    <h2 className="text-lg font-bold text-slate-900 mb-4">Register New Course</h2>
+                    <h2 className="text-lg font-bold text-slate-900 mb-4">Cadastrar Novo Curso</h2>
                     <form onSubmit={handleRegisterCourse} className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="md:col-span-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Course Title</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Título do Curso</label>
                         <input
                           type="text"
                           required
                           value={courseForm.name}
                           onChange={(e) => setCourseForm({ ...courseForm, name: e.target.value })}
-                          placeholder="e.g. Master of Business Administration"
+                          placeholder="ex: Mestrado em Administração de Empresas"
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Workload (Hours)</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Carga Horária (Horas)</label>
                         <input
                           type="number"
                           required
                           value={courseForm.workload}
                           onChange={(e) => setCourseForm({ ...courseForm, workload: e.target.value })}
-                          placeholder="e.g. 60"
+                          placeholder="ex: 60"
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                         />
                       </div>
                       <div className="md:col-span-3">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Description</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Descrição</label>
                         <textarea
                           rows="2"
                           value={courseForm.description}
                           onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
-                          placeholder="Brief syllabus outline or course requirements..."
+                          placeholder="Breve ementa ou requisitos do curso..."
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                         />
                       </div>
@@ -824,23 +826,23 @@ export default function Dashboard() {
                           className="bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-1.5"
                         >
                           <Plus className="h-4.5 w-4.5" />
-                          Add Course
+                          Adicionar Curso
                         </button>
                       </div>
                     </form>
                   </div>
 
                   <div className="bg-white border border-slate-200 rounded-2xl p-6">
-                    <h2 className="text-lg font-bold text-slate-900 mb-4">Course Offerings</h2>
+                    <h2 className="text-lg font-bold text-slate-900 mb-4">Cursos Ofertados</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {courses.map((course) => (
                         <div key={course.id} className="border border-slate-200 p-4 rounded-xl flex flex-col justify-between">
                           <div>
                             <span className="text-[10px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded uppercase block w-fit mb-2">
-                              {course.workloadHours} Hours
+                              {course.workloadHours} Horas
                             </span>
                             <h3 className="font-bold text-slate-900 text-sm leading-snug">{course.title}</h3>
-                            <p className="text-xs text-slate-500 mt-1">{course.description || 'No description available.'}</p>
+                            <p className="text-xs text-slate-500 mt-1">{course.description || 'Nenhuma descrição disponível.'}</p>
                           </div>
                           <div className="pt-4 mt-4 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400 font-mono">
                             <span>ID: #{course.id}</span>
@@ -849,7 +851,7 @@ export default function Dashboard() {
                       ))}
                       {courses.length === 0 && (
                         <div className="sm:col-span-2 py-8 text-center text-slate-400 border border-dashed border-slate-200 rounded-xl text-sm">
-                          No courses registered yet.
+                          Nenhum curso cadastrado ainda.
                         </div>
                       )}
                     </div>
@@ -865,32 +867,32 @@ export default function Dashboard() {
                   exit={{ opacity: 0 }}
                   className="bg-white border border-slate-200 rounded-2xl p-6"
                 >
-                  <h2 className="text-lg font-bold text-slate-900 mb-2">Issue Verified Certificate</h2>
+                  <h2 className="text-lg font-bold text-slate-900 mb-2">Emitir Certificado Verificado</h2>
                   <p className="text-xs text-slate-500 mb-6">
-                    Fill in the student details. The registry will record their information in the database and write the transaction proofs directly to the blockchain.
+                    Preencha os detalhes do estudante. O registro salvará suas informações no banco de dados e gravará as provas de transação diretamente na blockchain.
                   </p>
 
                   <form onSubmit={handleIssueCertificate} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Student Full Name</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Nome Completo do Estudante</label>
                         <input
                           type="text"
                           required
                           value={certForm.studentName}
                           onChange={(e) => setCertForm({ ...certForm, studentName: e.target.value })}
-                          placeholder="e.g. Alice Smith"
+                          placeholder="ex: Alice Smith"
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Student Email Address</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Endereço de E-mail do Estudante</label>
                         <input
                           type="email"
                           required
                           value={certForm.studentEmail}
                           onChange={(e) => setCertForm({ ...certForm, studentEmail: e.target.value })}
-                          placeholder="e.g. alice@example.com"
+                          placeholder="ex: alice@exemplo.com"
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                         />
                       </div>
@@ -898,26 +900,26 @@ export default function Dashboard() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Associated Course</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Curso Associado</label>
                         <select
                           required
                           value={certForm.courseId}
                           onChange={(e) => setCertForm({ ...certForm, courseId: e.target.value })}
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none bg-white focus:border-brand-500 transition-colors"
                         >
-                          <option value="">Select a Course</option>
+                          <option value="">Selecione um Curso</option>
                           {courses.map((course) => (
                             <option key={course.id} value={course.id}>{course.title} ({course.workloadHours}h)</option>
                           ))}
                         </select>
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">IPFS Hash / PDF CID (Optional)</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1">Hash IPFS / CID do PDF (Opcional)</label>
                         <input
                           type="text"
                           value={certForm.ipfsHash}
                           onChange={(e) => setCertForm({ ...certForm, ipfsHash: e.target.value })}
-                          placeholder="Autogenerated if left empty"
+                          placeholder="Gerado automaticamente se deixado em branco"
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-colors"
                         />
                       </div>
@@ -934,7 +936,7 @@ export default function Dashboard() {
                         ) : (
                           <Award className="h-4.5 w-4.5" />
                         )}
-                        Issue Credential & Register Hash
+                        Emitir Credencial e Registrar Hash
                       </button>
                     </div>
                   </form>
@@ -950,11 +952,11 @@ export default function Dashboard() {
                   className="bg-white border border-slate-200 rounded-2xl p-6"
                 >
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-bold text-slate-900">Verifiable Credentials Ledger</h2>
+                    <h2 className="text-lg font-bold text-slate-900">Livro de Registro de Credenciais Verificáveis</h2>
                     <button
                       onClick={() => loadData(currentUser)}
                       className="p-1 border border-slate-200 rounded text-slate-500 hover:text-slate-900 transition-colors bg-white"
-                      title="Reload Ledger"
+                      title="Recarregar Registro"
                     >
                       <RefreshCw className="h-4 w-4" />
                     </button>
@@ -963,11 +965,11 @@ export default function Dashboard() {
                     <table className="w-full text-left text-sm text-slate-600">
                       <thead>
                         <tr className="border-b border-slate-100 text-xs font-bold uppercase text-slate-400">
-                          <th className="py-3 px-4">Certificate ID</th>
-                          <th className="py-3 px-4">Student</th>
-                          <th className="py-3 px-4">Course</th>
+                          <th className="py-3 px-4">ID do Certificado</th>
+                          <th className="py-3 px-4">Estudante</th>
+                          <th className="py-3 px-4">Curso</th>
                           <th className="py-3 px-4">Status</th>
-                          <th className="py-3 px-4 text-right">Actions</th>
+                          <th className="py-3 px-4 text-right">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -980,7 +982,7 @@ export default function Dashboard() {
                             </td>
                             <td className="py-3 px-4">
                               <span className="text-slate-800 font-medium block">{cert.courseTitle}</span>
-                              <span className="text-[10px] text-slate-400 block">{cert.workloadHours}h workload</span>
+                              <span className="text-[10px] text-slate-400 block">{cert.workloadHours}h de carga horária</span>
                             </td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
@@ -988,7 +990,7 @@ export default function Dashboard() {
                                   ? 'bg-emerald-50 text-emerald-700' 
                                   : 'bg-red-50 text-red-700'
                               }`}>
-                                {cert.status === 'active' ? 'Registered' : 'Revoked'}
+                                {cert.status === 'active' ? 'Registrado' : 'Revogado'}
                               </span>
                             </td>
                             <td className="py-3 px-4 text-right space-x-2">
@@ -998,7 +1000,7 @@ export default function Dashboard() {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-0.5 text-xs font-semibold text-brand-600 hover:text-brand-850 px-2 py-1 border border-brand-100 rounded bg-brand-50/30 transition-colors"
                               >
-                                Validate
+                                Validar
                                 <ExternalLink className="h-3 w-3" />
                               </a>
                               {cert.status === 'active' && (
@@ -1006,7 +1008,7 @@ export default function Dashboard() {
                                   onClick={() => handleRevokeCert(cert.id)}
                                   className="text-xs font-semibold text-red-600 hover:text-red-800 px-2 py-1 border border-red-100 rounded hover:bg-red-50/30 transition-colors"
                                 >
-                                  Revoke
+                                  Revogar
                                 </button>
                               )}
                             </td>
@@ -1015,7 +1017,7 @@ export default function Dashboard() {
                         {certificates.length === 0 && (
                           <tr>
                             <td colSpan="5" className="py-8 text-center text-slate-400">
-                              No certificates issued under this account.
+                              Nenhum certificado emitido por esta conta.
                             </td>
                           </tr>
                         )}
@@ -1024,7 +1026,7 @@ export default function Dashboard() {
                   </div>
                 </motion.div>
               )}
-
+ 
               {/* 5. Student: Dashboard View */}
               {activeTab === 'studentDashboard' && currentUser.role === 'student' && (
                 <motion.div
@@ -1040,18 +1042,18 @@ export default function Dashboard() {
                         <Award className="h-6 w-6" />
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-slate-400 block uppercase tracking-wider">Certificates Obtained</span>
+                        <span className="text-xs font-bold text-slate-400 block uppercase tracking-wider">Certificados Obtidos</span>
                         <span className="text-2xl font-bold text-slate-800 mt-0.5 block">{studentSummary.totalCertificates}</span>
                       </div>
                     </div>
-
+ 
                     <div className="bg-white border border-slate-200 p-6 rounded-2xl flex items-center gap-4">
                       <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
                         <Activity className="h-6 w-6" />
                       </div>
                       <div>
-                        <span className="text-xs font-bold text-slate-400 block uppercase tracking-wider">Completed Workload</span>
-                        <span className="text-2xl font-bold text-slate-800 mt-0.5 block">{studentSummary.totalHoursCompleted} Hours</span>
+                        <span className="text-xs font-bold text-slate-400 block uppercase tracking-wider">Carga Horária Concluída</span>
+                        <span className="text-2xl font-bold text-slate-800 mt-0.5 block">{studentSummary.totalHoursCompleted} Horas</span>
                       </div>
                     </div>
                   </div>
@@ -1060,13 +1062,13 @@ export default function Dashboard() {
                   <div className="bg-white border border-slate-200 rounded-2xl p-6">
                     <div className="flex justify-between items-center mb-4">
                       <div>
-                        <h2 className="text-lg font-bold text-slate-900">My Educational Credentials</h2>
-                        <p className="text-xs text-slate-500 mt-0.5">List of verifiable achievements registered to your profile email.</p>
+                        <h2 className="text-lg font-bold text-slate-900">Minhas Credenciais Educacionais</h2>
+                        <p className="text-xs text-slate-500 mt-0.5">Lista de conquistas verificáveis registradas para o e-mail do seu perfil.</p>
                       </div>
                       <button
                         onClick={() => loadData(currentUser)}
                         className="p-1 border border-slate-200 rounded text-slate-500 hover:text-slate-900 transition-colors bg-white"
-                        title="Reload Portfolio"
+                        title="Recarregar Portfólio"
                       >
                         <RefreshCw className="h-4 w-4" />
                       </button>
@@ -1076,12 +1078,12 @@ export default function Dashboard() {
                       <table className="w-full text-left text-sm text-slate-600">
                         <thead>
                           <tr className="border-b border-slate-100 text-xs font-bold uppercase text-slate-400">
-                            <th className="py-3 px-4">Credential ID</th>
-                            <th className="py-3 px-4">Course</th>
-                            <th className="py-3 px-4">Issuing Authority</th>
-                            <th className="py-3 px-4">Workload</th>
-                            <th className="py-3 px-4">Issued On</th>
-                            <th className="py-3 px-4 text-right">Actions</th>
+                            <th className="py-3 px-4">ID da Credencial</th>
+                            <th className="py-3 px-4">Curso</th>
+                            <th className="py-3 px-4">Autoridade Emissora</th>
+                            <th className="py-3 px-4">Carga Horária</th>
+                            <th className="py-3 px-4">Emitido Em</th>
+                            <th className="py-3 px-4 text-right">Ações</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1093,7 +1095,7 @@ export default function Dashboard() {
                                 <span className="font-semibold text-slate-800 block">{cert.issuerName}</span>
                                 <span className="text-[10px] text-slate-400 block font-mono">{cert.issuerId}</span>
                               </td>
-                              <td className="py-3.5 px-4">{cert.workloadHours} hrs</td>
+                              <td className="py-3.5 px-4">{cert.workloadHours} h</td>
                               <td className="py-3.5 px-4">
                                 {new Date(cert.issuedAt).toLocaleDateString()}
                               </td>
@@ -1104,7 +1106,7 @@ export default function Dashboard() {
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-800 px-3 py-1.5 border border-brand-100 rounded-lg bg-brand-50/30 transition-colors"
                                 >
-                                  Verify Ledger
+                                  Verificar Registro
                                   <ExternalLink className="h-3.5 w-3.5" />
                                 </a>
                               </td>
@@ -1113,7 +1115,7 @@ export default function Dashboard() {
                           {certificates.length === 0 && (
                             <tr>
                               <td colSpan="6" className="py-8 text-center text-slate-400">
-                                No educational certificates registered under this email address yet.
+                                Nenhum certificado educacional registrado sob este endereço de e-mail ainda.
                               </td>
                             </tr>
                           )}

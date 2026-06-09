@@ -40,23 +40,23 @@ export default function Home() {
 
   const features = [
     {
-      title: 'Blockchain Immutability',
-      description: 'Certificates are cryptographically registered on smart contracts. No tampering, no falsification.',
+      title: 'Imutabilidade na Blockchain',
+      description: 'Os certificados são registrados criptograficamente em contratos inteligentes. Sem adulterações, sem falsificações.',
       icon: ShieldCheck,
     },
     {
-      title: 'Privacy Preserved',
-      description: 'Private student data is processed locally and converted into SHA-256 hashes before registry.',
+      title: 'Privacidade Preservada',
+      description: 'Os dados privados dos alunos são processados localmente e convertidos em hashes SHA-256 antes do registro.',
       icon: Lock,
     },
     {
-      title: 'Decentralized Metadata (IPFS)',
-      description: 'Original PDF certificate layout and evidence assets are pinned securely on IPFS.',
+      title: 'Metadados Descentralizados (IPFS)',
+      description: 'O layout original do certificado em PDF e os arquivos de comprovação são armazenados de forma segura no IPFS.',
       icon: Server,
     },
     {
-      title: 'Instant Validation',
-      description: 'Recruiters and verification systems validate student credentials in a single click.',
+      title: 'Validação Instantânea',
+      description: 'Recrutadores e sistemas de verificação validam as credenciais dos alunos com apenas um clique.',
       icon: Award,
     },
   ]
@@ -78,7 +78,7 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-600"></span>
               </span>
-              Web3 Educational Verifier
+              Verificador Educacional Web3
             </motion.div>
 
             {/* Main Title */}
@@ -86,7 +86,7 @@ export default function Home() {
               variants={itemVariants}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-[1.1]"
             >
-              Verifiable educational credentials on <span className="text-brand-600">Blockchain</span>.
+              Credenciais educacionais verificáveis na <span className="text-brand-600">Blockchain</span>.
             </motion.h1>
 
             {/* Subtext */}
@@ -94,7 +94,7 @@ export default function Home() {
               variants={itemVariants}
               className="mt-5 text-base sm:text-lg text-slate-600 font-normal leading-relaxed"
             >
-              SkillChain enables academic institutions, companies, and boot camps to register, issue, and instantly validate digital credentials under decentralized proof.
+              A SkillChain permite que instituições acadêmicas, empresas e bootcamps registrem, emitam e validem instantaneamente credenciais digitais sob prova descentralizada.
             </motion.p>
 
             {/* Quick Validation Form */}
@@ -108,14 +108,14 @@ export default function Home() {
                 required
                 value={certId}
                 onChange={(e) => setCertId(e.target.value)}
-                placeholder="Enter 9-digit Certificate ID..."
+                placeholder="Digite o ID do Certificado de 9 dígitos..."
                 className="flex-grow px-4 py-2 border-0 bg-transparent text-sm focus:outline-none placeholder-slate-400"
               />
               <button
                 type="submit"
                 className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5"
               >
-                Validate
+                Validar
               </button>
             </motion.form>
 
@@ -128,7 +128,7 @@ export default function Home() {
                 to="/dashboard"
                 className="text-brand-600 hover:text-brand-800 flex items-center gap-1.5"
               >
-                Go to Issuer Dashboard
+                Ir para o Painel do Emissor
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </motion.div>
@@ -141,10 +141,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
-              Cryptographic Trust Architecture
+              Arquitetura de Confiança Criptográfica
             </h2>
             <p className="mt-3 text-slate-600 text-sm">
-              Standardized off-chain metadata combined with immutable blockchain signatures.
+              Metadados padronizados fora da rede combinados com assinaturas imutáveis em blockchain.
             </p>
           </div>
 
@@ -184,19 +184,19 @@ export default function Home() {
           
           <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="max-w-md">
-              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Open Auditing Ledger</h2>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Livro de Auditoria Aberto</h2>
               <p className="mt-2 text-slate-600 text-sm">
-                SkillChain uses OpenZeppelin compiler specs and standardized event emissions to facilitate automated public API integration for corporate validation.
+                A SkillChain usa especificações de compilação da OpenZeppelin e emissões de eventos padronizadas para facilitar a integração automatizada de APIs públicas para validação corporativa.
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full md:w-auto">
               {[
-                'Solidity v0.8.20 Smart Contracts',
-                'MetaMask Provider Bridge Ready',
-                'Failsafe Off-chain Fallbacks',
-                'IPFS Asset Panning Logs',
-                'SHA-256 local identifier hashing',
-                'Instant Admin revocation flags',
+                'Contratos Inteligentes Solidity v0.8.20',
+                'Pronto para Conexão com MetaMask',
+                'Alternativas Off-chain à Prova de Falhas',
+                'Registros de Ativos no IPFS',
+                'Hashing SHA-256 local de identificadores',
+                'Sinalizadores de revogação instantânea pelo Admin',
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2.5 text-xs font-semibold text-slate-700">
                   <CheckCircle className="h-4.5 w-4.5 text-brand-600 flex-shrink-0" />
@@ -210,13 +210,13 @@ export default function Home() {
           <div className="border border-brand-100 bg-brand-50/30 rounded-2xl p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="max-w-2xl">
               <span className="text-[10px] font-bold text-brand-700 bg-brand-50 border border-brand-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider block w-fit mb-3">
-                For Education Partners
+                Para Parceiros Educacionais
               </span>
               <h3 className="text-xl font-bold text-slate-950">
-                Want to start issuing blockchain-backed credentials?
+                Quer começar a emitir credenciais protegidas por blockchain?
               </h3>
               <p className="text-slate-600 text-sm mt-1.5 leading-relaxed">
-                Register your institution on SkillChain today. Once approved by the contract administrator, you can configure your course structures, manage faculty access, and publish student records directly to our audit network.
+                Registre sua instituição na SkillChain hoje mesmo. Uma vez aprovada pelo administrador do contrato, você poderá configurar suas estruturas de cursos, gerenciar o acesso de professores e publicar registros de alunos diretamente na nossa rede de auditoria.
               </p>
             </div>
             <div className="flex-shrink-0">
@@ -224,7 +224,7 @@ export default function Home() {
                 to="/dashboard?tab=register&role=institution"
                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm"
               >
-                Register Your Institution
+                Registrar Sua Instituição
                 <ArrowRight className="h-4.5 w-4.5" />
               </Link>
             </div>

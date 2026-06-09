@@ -7,7 +7,7 @@ export default function MainLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navLinks = [
-    { to: '/', label: 'Home', icon: Home },
+    { to: '/', label: 'Início', icon: Home },
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   ]
 
@@ -62,7 +62,7 @@ export default function MainLayout() {
                 to="/dashboard"
                 className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 active:bg-brand-800 transition-colors duration-200"
               >
-                Launch App
+                Acessar App
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -75,7 +75,7 @@ export default function MainLayout() {
                 className="inline-flex items-center justify-center p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 focus:outline-none transition-colors duration-200"
                 aria-expanded={isMobileMenuOpen}
               >
-                <span className="sr-only">Open main menu</span>
+                <span className="sr-only">Abrir menu principal</span>
                 {isMobileMenuOpen ? (
                   <X className="block h-6 w-6" aria-hidden="true" />
                 ) : (
@@ -124,7 +124,7 @@ export default function MainLayout() {
                     onClick={closeMobileMenu}
                     className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-base font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors duration-150"
                   >
-                    Launch App
+                    Acessar App
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -147,11 +147,11 @@ export default function MainLayout() {
             <span className="font-semibold text-sm text-slate-800">SkillChain</span>
             <span className="text-slate-400 text-xs">|</span>
             <p className="text-xs text-slate-500">
-              © {new Date().getFullYear()} SkillChain. Built for Hackathon.
+              © {new Date().getFullYear()} SkillChain. Desenvolvido para o Hackathon.
             </p>
           </div>
           <div className="flex gap-6 text-sm text-slate-500">
-            <Link to="/" className="hover:text-slate-800 transition-colors duration-150">Home</Link>
+            <Link to="/" className="hover:text-slate-800 transition-colors duration-150">Início</Link>
             <Link to="/dashboard" className="hover:text-slate-800 transition-colors duration-150">Dashboard</Link>
           </div>
         </div>
