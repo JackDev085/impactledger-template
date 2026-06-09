@@ -174,3 +174,24 @@ Você pode digitar qualquer um dos IDs abaixo na barra de busca pública de veri
 ## 👥 Equipe
 
 * **Jackson Lorran do Nascimento** - (jackson.nasc20@gmail.com)
+
+---
+
+## 📋 Checklist de Entregas
+
+* **Uso de blockchain:** Sim (Todas as validações, emissões e revogações de certificados ocorrem na rede de teste Sepolia).
+* **Registro auditável:** Sim (Os hashes criptográficos de certificados e autorizações de instituições são públicos e verificáveis no Etherscan).
+* **Smart contract funcional:** Sim (Contrato inteligente `SkillChain.sol` implantado e verificado na rede Sepolia).
+* **Histórico verificável:** Sim (Verificação pública de credenciais de forma descentralizada lendo os estados do contrato).
+* **README funcional:** Sim.
+* **Vídeo-pitch:** Pendente de inclusão do link.
+
+---
+
+## 🤖 Declaração de Uso de Inteligência Artificial (IA)
+
+Em conformidade com as diretrizes do Hackweb, declaramos que ferramentas de IA generativa foram utilizadas estritamente em papel de apoio ao desenvolvimento do projeto, mantendo a autoria intelectual e supervisão técnica totalmente centralizadas na equipe.
+
+### Ferramentas Utilizadas
+* **Modelos:** Google Gemini
+* **Editor de código:** Antigravity
