@@ -184,13 +184,13 @@ Você pode digitar qualquer um dos IDs abaixo na barra de busca pública de veri
 * **Smart contract funcional:** Sim (Contrato inteligente `SkillChain.sol` implantado e verificado na rede Sepolia).
 * **Histórico verificável:** Sim (Verificação pública de credenciais de forma descentralizada lendo os estados do contrato).
 * **README funcional:** Sim.
-* **Vídeo-pitch:** Pendente de inclusão do link.
+* **Vídeo-pitch:** Sim (Já incluído no arquivo README) e posteriormente adicionado ao formulario como link  do youtube.
 
 ---
 
 ## 🤖 Declaração de Uso de Inteligência Artificial (IA)
 
-Em conformidade com as diretrizes do Hackweb, declaramos que ferramentas de IA generativa foram utilizadas estritamente em papel de apoio ao desenvolvimento do projeto, mantendo a autoria intelectual e supervisão técnica totalmente centralizadas na equipe.
+De acordo com as diretrizes do Hackweb, declaro que o uso de ferramentas de IA generativa limitou-se ao auxílio em atividades de desenvolvimento, sendo a autoria intelectual, as decisões estratégicas e a supervisão técnica conduzidas integralmente pelo autor deste projeto.
 
 ### Ferramentas Utilizadas
 * **Modelos:** Google Gemini
