@@ -116,11 +116,11 @@ O frontend e o backend estão rodando de forma unificada sob o mesmo link na Ver
 Para testar a aplicação sem precisar criar dados do zero, utilize as contas pré-carregadas descritas no arquivo [dados_demo.txt](./dados_demo.txt):
 
 * **Admin Master:** `admin@skillchain.org` / `adminpassword`
-* **Instituição de Ensino:** `mit@edu.org` / `mitpassword`
-* **Estudante:** `john@doe.com` / `johnpassword`
-* **ID para Validação Pública:** `2jwr91084` (digite este ID na barra de busca de verificação para testar a resposta do banco de dados).
+* **Instituição de Ensino:** `uniateneu@uniateneu` / `123`
+* **ID para Validação Pública (VÁLIDO):** `941599477` (digite este ID na barra de busca de verificação para testar a resposta apartir da blockchain).
+* **ID para Validação Pública (REVOGADO):** `401180492` (digite este ID na barra de busca de verificação para testar a resposta apartir da blockchain).
 
 ---
 ## Equipe
 
-- Jackson Lorran do Nascimento
+- Jackson Lorran do Nascimento (jackson.nasc20@gmail.com)
