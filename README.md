@@ -113,6 +113,22 @@ O projeto está publicado em produção:
 
 ---
 
+## 🎥 Demonstração Visual e Recursos
+
+Para visualizar a aplicação em ação e compreender a arquitetura e fluxos de negócio, disponibilizamos os seguintes materiais no diretório [`/assets`](./assets):
+
+### 📢 Pitch de Apresentação
+* **Vídeo do Pitch:** [Assista ao vídeo do Pitch de Apresentação (pitch.mp4)](./assets/pitch.mp4)
+* **Miniatura do Pitch:** 
+  ![Miniatura do Pitch](./assets/pitch.png)
+
+### ⚙️ Demonstração e Fluxo da Aplicação
+* **Vídeo de Demonstração (Demo):** [Assista ao vídeo de fluxo de uso da aplicação (fluxo_da_aplicacao.mp4)](./assets/fluxo_da_aplicacao.mp4)
+* **Diagrama de Fluxo:**
+  ![Diagrama de Fluxo da Aplicação](./assets/fluxo.png)
+
+---
+
 ## 🔑 Dados para Apresentação (Demo)
 
 Para testar a aplicação sem precisar criar dados do zero, utilize as credenciais descritas abaixo:
